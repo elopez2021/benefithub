@@ -1,6 +1,7 @@
-<link rel="stylesheet" href="assets/css/bootstrap.min.css">
+<link rel="stylesheet" href="<?= base_url('assets/css/bootstrap.min.css'); ?>"">
+
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-<link rel="stylesheet" href="assets/css/style.css">
+<link rel="stylesheet" href="<?= base_url('assets/css/style.css'); ?>"">
 
 <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
     <div class="container">
@@ -43,7 +44,7 @@
     </div>
 </nav>
 
-<script src="assets/js/bootstrap.bundle.min.js"></script>
+<script src="<?= base_url('assets/js/bootstrap.bundle.min.js'); ?>""></script>
 
 <script>
 

@@ -56,6 +56,23 @@ class AuthController extends ResourceController
             ],
         ]);
     }
+
+
+    public function logout()
+    {
+        // Destroy the session (if using session-based authentication)
+        session()->destroy();
+
+        // If using token-based authentication, invalidate the token
+        $userId = session()->get('user_id'); // Or get the user ID from the token
+        if ($userId) {
+            $model = new \App\Models\UserModel();
+            $model->update($userId, ['token' => null]); // Invalidate the token
+        }
+
+        // Redirect to the login page or home page
+        return redirect()->to(site_url('login'))->with('message', 'Has cerrado sesión correctamente.');
+    }
 }
 
 

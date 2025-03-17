@@ -177,21 +177,26 @@
             headers: {
                 'Content-Type': 'application/json', // Set the Content-Type to JSON
             },
-        })        
+            })        
             .then(response => {
-                // Debugging: Log the response
-                console.log('Response:', response);
-
                 if (response.data.success) {
-                    alert(response.data.message);
-                    
+                    // Store the token and user data
                     localStorage.setItem('token', response.data.token);
                     localStorage.setItem('user', JSON.stringify(response.data.user));
-                    window.location.href = '<?= site_url('dashboard'); ?>';
-                    
+
+                    // Redirect based on role
+                    const role = response.data.user.role_id;
+                    if (role == 1) {
+                        window.location.href = '<?= site_url('admin/dashboard'); ?>';
+                    } else if (role == 2) {
+                        window.location.href = '<?= site_url('employee/dashboard'); ?>';
+                    } else if(role == 3) {
+                        window.location.href = '<?= site_url('employee/dashboard'); ?>';
+                    } else {
+                        alert('Rol de usuario desconocido' + role);
+                    }
                 } else {
-                    errorAlert.classList.remove('d-none'); // Show the alert
-                    errorAlert.textContent = response.data.message || 'Error en el inicio de sesión';
+                    alert(response.data.message || 'Error en el inicio de sesión');
                 }
             })
             .catch(error => {

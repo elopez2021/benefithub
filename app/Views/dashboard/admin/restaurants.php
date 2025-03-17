@@ -4,50 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Admin - Restaurantes</title>
-    <link href="../../css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    <style>
-        .sidebar {
-            background: #2c3e50;
-            min-height: 100vh;
-            padding: 20px;
-            color: white;
-        }
-        
-        .main-content {
-            padding: 20px;
-        }
-        
-        .stat-card {
-            background: white;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        
-        .table-hover tbody tr:hover {
-            background-color: #f8f9fa;
-            cursor: pointer;
-        }
-    </style>
+    
 </head>
 <body>
     <div class="wrapper d-flex">
-        <!-- Sidebar -->
-        <div class="sidebar">
-            <h4 class="mb-4">BenefitHub Restaurante</h4>
-            <div class="list-group">
-                <a href="index.html" class="list-group-item list-group-item-action bg-transparent text-white border-0">
-                    <i class="bi bi-egg-fried me-2"></i>Productos
-                </a>
-                <a href="category.html" class="list-group-item list-group-item-action bg-transparent text-white border-0">
-                    <i class="bi bi-tags me-2"></i>Categorías
-                </a>
-                <a href="schedule.html" class="list-group-item list-group-item-action bg-transparent text-white border-0 active">
-                    <i class="bi bi-clock me-2"></i>Horarios
-                </a>
-            </div>
-        </div>
+    <!-- Sidebar -->
+    <?php include 'navbar.php'; ?>
 
         <!-- Contenido Principal -->
         <div class="main-content flex-grow-1">

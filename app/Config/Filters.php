@@ -95,7 +95,7 @@ class Filters extends BaseFilters
      * @var array<string, list<string>>
      */
     public array $methods = [
-        'post' => ['tokenAuth'], // Apply to POST requests
+        //'post' => ['tokenAuth'], // Apply to POST requests
     ];
 
     /**

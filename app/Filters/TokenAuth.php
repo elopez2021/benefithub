@@ -1,3 +1,4 @@
+<?php
 namespace App\Filters;
 
 use CodeIgniter\Filters\FilterInterface;
@@ -45,3 +46,5 @@ class TokenAuth implements FilterInterface
         // No action needed after the response
     }
 }
+
+?>
