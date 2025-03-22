@@ -17,7 +17,7 @@
             <ul class="navbar-nav ms-auto">
                 <!-- Home Link -->
                 <li class="nav-item">
-                    <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'index.php' ? 'active' : ''; ?> " href="<?= route_to('home') ?>">Inicio</a>
+                    <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'index.php' ? 'active' : ''; ?> " href="<?= route_to('/') ?>">Inicio</a>
                 </li>
                 
                 <!-- Restaurants Link -->
