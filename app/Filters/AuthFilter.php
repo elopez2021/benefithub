@@ -16,19 +16,19 @@ class AuthFilter implements FilterInterface
         // You can customize this logic as needed
         $route = current_url();
         
-        if ($route == site_url('admin/dashboard') && $role_id != 1) {
+        if ($route == base_url('admin/dashboard') && $role_id != 1) {
             // If user is not an admin, redirect to a "Forbidden" page or login
-            return redirect()->to(site_url('login'))->with('error', 'Acceso no permitido.');
+            return redirect()->to(base_url('login'))->with('error', 'Acceso no permitido.');
         }
 
-        if ($route == site_url('employee/dashboard') && $role_id != 2) {
+        if ($route == base_url('employee/dashboard') && $role_id != 2) {
             // If user is not an employee, redirect to a "Forbidden" page or login
-            return redirect()->to(site_url('login'))->with('error', 'Acceso no permitido.');
+            return redirect()->to(base_url('login'))->with('error', 'Acceso no permitido.');
         }
 
-        if ($route == site_url('business/dashboard') && $role_id != 3) {
+        if ($route == base_url('business/dashboard') && $role_id != 3) {
             // If user is not a business, redirect to a "Forbidden" page or login
-            return redirect()->to(site_url('login'))->with('error', 'Acceso no permitido.');
+            return redirect()->to(base_url('login'))->with('error', 'Acceso no permitido.');
         }
 
         // You can extend this logic further to handle more pages and roles as necessary

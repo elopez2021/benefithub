@@ -24,6 +24,7 @@ $routes->get('logout', 'AuthController::logout');
 $routes->group('admin', ['filter' => 'authFilter'], function ($routes) {
     $routes->get('dashboard', 'AdminController::index');
 });
+
 $routes->group('employee', ['filter' => 'authFilter'], function ($routes) {
     $routes->get('dashboard', 'EmployeeController::index');
 });

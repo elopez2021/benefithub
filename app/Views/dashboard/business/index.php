@@ -4,57 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Empresas - Empleados</title>
-    <link href="../../css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    <style>
-        .sidebar {
-            background: #2c3e50;
-            min-height: 100vh;
-            color: white;
-            padding: 20px;
-        }
-        
-        .main-content {
-            padding: 20px;
-            background-color: #f8f9fa;
-            min-height: 100vh;
-        }
-        
-        .employee-card {
-            transition: all 0.3s;
-            border: 1px solid #dee2e6;
-        }
-        
-        .employee-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-        
-        .credit-badge {
-            background-color: #e9ecef;
-            color: #495057;
-            border: 1px solid #dee2e6;
-        }
-    </style>
 </head>
 <body>
     <div class="wrapper d-flex">
         <!-- Sidebar -->
-        <div class="sidebar">
-            <h4 class="mb-4">BenefitHub Empresas</h4>
-            <div class="list-group">
-                <a href="index.html" class="list-group-item list-group-item-action bg-transparent text-white border-0 active">
-                    <i class="bi bi-people me-2"></i>Empleados
-                </a>
-                <a href="credits.html" class="list-group-item list-group-item-action bg-transparent text-white border-0">
-                    <i class="bi bi-credit-card me-2"></i>Créditos
-                </a>
-                <a href="report.html" class="list-group-item list-group-item-action bg-transparent text-white border-0">
-                    <i class="bi bi-bar-chart me-2"></i>Reportes
-                </a>
-            </div>
-        </div>
 
+        <?php include 'navbar.php'; ?>
+        
         <!-- Contenido Principal -->
         <div class="main-content flex-grow-1">
             <!-- Sección Empleados -->

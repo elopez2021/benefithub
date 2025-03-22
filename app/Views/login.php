@@ -188,7 +188,7 @@
                     } else if (role == 2) {
                         window.location.href = '<?= site_url('employee/dashboard'); ?>';
                     } else if(role == 3) {
-                        window.location.href = '<?= site_url('employee/dashboard'); ?>';
+                        window.location.href = '<?= site_url('business/dashboard'); ?>';
                     } else {
                         alert('Rol de usuario desconocido: ' + role);
                     }

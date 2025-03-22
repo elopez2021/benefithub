@@ -31,17 +31,17 @@
     <h4 class="mb-4">BenefitHub Admin</h4>
     <ul class="nav flex-column">
         <li class="nav-item mb-3">
-            <a class="nav-link text-white <?= uri_string() === 'admin/dashboard' ? 'active' : ''; ?>" href="<?= site_url('admin/dashboard'); ?>">
+            <a class="nav-link text-white <?= uri_string() === 'admin/dashboard' ? 'active' : ''; ?>" href="<?= base_url('admin/dashboard'); ?>">
                 <i class="bi bi-house me-2"></i>Inicio
             </a>
         </li>
         <li class="nav-item mb-3">
-            <a class="nav-link text-white <?= uri_string() === 'admin/business' ? 'active' : ''; ?>" href="<?= site_url('admin/business'); ?>">
+            <a class="nav-link text-white <?= uri_string() === 'admin/business' ? 'active' : ''; ?>" href="<?= base_url('admin/business'); ?>">
                 <i class="bi bi-building me-2"></i>Empresas
             </a>
         </li>
         <li class="nav-item mb-3">
-            <a class="nav-link text-white <?= uri_string() === 'admin/restaurants' ? 'active' : ''; ?>" href="<?= site_url('admin/restaurants'); ?>">
+            <a class="nav-link text-white <?= uri_string() === 'admin/restaurants' ? 'active' : ''; ?>" href="<?= base_url('admin/restaurants'); ?>">
                 <i class="bi bi-shop me-2"></i>Restaurantes
             </a>
         </li>
