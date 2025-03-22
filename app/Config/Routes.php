@@ -10,10 +10,26 @@ $routes->get('/about', 'Home::about'); // About page
 $routes->get('/contact', 'Home::contact'); // Contact section
 $routes->get('/login', 'Home::login'); // Login page
 $routes->post('login/submit', 'AuthController::login');
+$routes->get('logout', 'AuthController::logout');
 
+/*
 
 $routes->get('admin/dashboard', 'AdminController::index');
+$routes->get('employee/dashboard', 'EmployeeController::index');
+$routes->get('business/dashboard', 'BusinessController::index');
 $routes->get('logout', 'AuthController::logout');
+
+*/
+
+$routes->group('admin', ['filter' => 'authFilter'], function ($routes) {
+    $routes->get('dashboard', 'AdminController::index');
+});
+$routes->group('employee', ['filter' => 'authFilter'], function ($routes) {
+    $routes->get('dashboard', 'EmployeeController::index');
+});
+$routes->group('business', ['filter' => 'authFilter'], function ($routes) {
+    $routes->get('dashboard', 'BusinessController::index');
+});
 
 /*
 

@@ -145,6 +145,8 @@
         document.getElementById('reset-form').style.display = 
             document.getElementById('reset-form').style.display === 'none' ? 'block' : 'none';
     }
+
+    
     
     document.getElementById('loginForm').addEventListener('submit', function (event) {
         event.preventDefault();
@@ -172,20 +174,15 @@
         // Debugging: Log the data being sent
         console.log('Data being sent:', data);
 
-        // Send the POST request using Axios
         axios.post('<?= route_to('login/submit'); ?>', data, {
             headers: {
                 'Content-Type': 'application/json', // Set the Content-Type to JSON
             },
             })        
             .then(response => {
+            
                 if (response.data.success) {
-                    // Store the token and user data
-                    localStorage.setItem('token', response.data.token);
-                    localStorage.setItem('user', JSON.stringify(response.data.user));
-
-                    // Redirect based on role
-                    const role = response.data.user.role_id;
+                    const role = response.data.role_id;
                     if (role == 1) {
                         window.location.href = '<?= site_url('admin/dashboard'); ?>';
                     } else if (role == 2) {
@@ -193,11 +190,13 @@
                     } else if(role == 3) {
                         window.location.href = '<?= site_url('employee/dashboard'); ?>';
                     } else {
-                        alert('Rol de usuario desconocido' + role);
+                        alert('Rol de usuario desconocido: ' + role);
                     }
                 } else {
                     alert(response.data.message || 'Error en el inicio de sesión');
                 }
+
+                
             })
             .catch(error => {
                 // Debugging: Log the error
@@ -235,6 +234,8 @@
                 buttonText.textContent = 'Ingresar';
                 loadingSpinner.classList.add('d-none');
             });
+        
+
     });
     
 </script>

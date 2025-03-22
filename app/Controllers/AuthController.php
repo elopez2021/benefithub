@@ -6,6 +6,7 @@ use App\Models\UserModel;
 use App\Controllers\BaseController;
 use CodeIgniter\HTTP\ResponseInterface;
 use CodeIgniter\RESTful\ResourceController;
+use \Config\Services;
 
 class AuthController extends ResourceController
 {
@@ -40,41 +41,50 @@ class AuthController extends ResourceController
             ], 401);
         }
 
-        // Generate token (simple example)
-        $token = bin2hex(random_bytes(32));
-        $model->update($user['id'], ['token' => $token]);
-
         // Return success response
+        
+        session()->set('user_id', $user['id']);
+        session()->set('role_id', $user['role_id']);
+        session()->set('username', $user['username']);
+        
+        
         return $this->respond([
             'success' => true,
-            'message' => 'Login successful',
-            'token'   => $token,
-            'user'    => [
-                'id'       => $user['id'],
-                'username' => $user['username'],
-                'role_id'  => $user['role_id'],
-            ],
+            'message' => 'Inicio de sesión exitoso',
+            'role_id' => $user['role_id'], // Send role_id to frontend for redirection (optional)
         ]);
     }
+
+    public function redirect()
+    {
+        $roleId = $this->request->getGet('role_id');
+
+        switch ($roleId) {
+            case 1:
+                return redirect()->to(site_url('admin/dashboard'));
+            case 2:
+                return redirect()->to(site_url('employee/dashboard'));
+            case 3:
+                return redirect()->to(site_url('business/dashboard'));
+            default:
+                return redirect()->to(site_url('login'))->with('error', 'Rol de usuario desconocido.');
+        }
+    }
+
 
 
     public function logout()
     {
-        // Destroy the session (if using session-based authentication)
+        // Destroy the session
         session()->destroy();
-
-        // If using token-based authentication, invalidate the token
-        $userId = session()->get('user_id'); // Or get the user ID from the token
-        if ($userId) {
-            $model = new \App\Models\UserModel();
-            $model->update($userId, ['token' => null]); // Invalidate the token
-        }
-
-        // Redirect to the login page or home page
-        return redirect()->to(site_url('login'))->with('message', 'Has cerrado sesión correctamente.');
+        
+        // Redirect to login page
+        return redirect()->to(base_url('login'));
     }
-}
 
+
+
+}
 
 /*
 
