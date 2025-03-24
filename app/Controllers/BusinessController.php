@@ -35,6 +35,7 @@ class BusinessController extends BaseController
             'province'   => $json->province ?? null,
             'address'    => $json->address ?? null,
             'user_id'    => $json->user_id ?? null,
+            'email'      => $json->email ?? null,
             'status'     => 1
         ];
 

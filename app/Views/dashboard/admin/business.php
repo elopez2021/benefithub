@@ -57,94 +57,54 @@
                             <tr>
                                 <th>Nombre Legal</th>
                                 <th>RNC</th>
+                                <th>Email</th>
+                                <th>Teléfono</th>
                                 <th>Subsidio Diario</th>
-                                <th>Credito Semanal Disponible</th>
                                 <th>Provincia</th>
                                 <th>Estado</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <!-- Empresa 1 -->
-                            <tr>
-                                <td>
-                                    <div class="d-flex align-items-center">
-                                        <img src="https://via.placeholder.com/50" 
-                                             class="rounded-circle me-3" 
-                                             alt="Logo"
-                                             style="width: 50px; height: 50px;">
-                                        <div>
-                                            <h6 class="mb-0">TechSolutions MX</h6>
-                                            <small class="text-muted">contacto@techsolutions.com</small>
+                            <?php foreach ($businesses as $business): ?>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div>
+                                                <h6 class="mb-0"><?= esc($business['legal_name']) ?></h6>
+                                                <small class="text-muted"><?= esc($business['email']) ?></small>
+                                            </div> 
                                         </div>
-                                    </div>
-                                </td>
-                                <td>123456789</td>
-                                <td>RD$ 150,000</td>
-                                <td>RD$ 200,000</td>
-                                <td>Distrito Nacional</td>
-                                <td>
-                                    <span class="badge bg-success">Activo</span>
-                                </td>
-                                <td>
-                                    <button class="btn btn-sm btn-warning me-2">
-                                        <i class="bi bi-pencil"></i>
-                                    </button>
-                                    <button class="btn btn-sm btn-danger">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
-                                </td>
-                            </tr>
+                                    </td>
+                                    <td><?= esc($business['rnc']) ?></td>
+                                    <td><?= esc($business['email']) ?></td>
+                                    <td><?= esc($business['phone']) ?></td>
+                                    <td>RD$ <?= number_format($business['daily_subsidy'], 2) ?></td>
+                                    <td><?= esc($business['province']) ?></td>
+                                    <td>
+                                        <span class="badge bg-<?= $business['status'] == 1 ? 'success' : 'danger' ?>">
+                                            <?= $business['status'] == 1 ? 'Activo' : 'Inactivo' ?>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-sm btn-warning me-2">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-danger">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
 
-                            <!-- Empresa 2 -->
-                            <tr>
-                                <td>
-                                    <div class="d-flex align-items-center">
-                                        <img src="https://via.placeholder.com/50" 
-                                             class="rounded-circle me-3" 
-                                             alt="Logo"
-                                             style="width: 50px; height: 50px;">
-                                        <div>
-                                            <h6 class="mb-0">AgroDominicana</h6>
-                                            <small class="text-muted">info@agrodominicana.com</small>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>987654321</td>
-                                <td>RD$ 200,000</td>
-                                <td>RD$ 200,000</td>
-                                <td>Santiago</td>
-                                <td>
-                                    <span class="badge bg-warning text-dark">En revisión</span>
-                                </td>
-                                <td>
-                                    <button class="btn btn-sm btn-warning me-2">
-                                        <i class="bi bi-pencil"></i>
-                                    </button>
-                                    <button class="btn btn-sm btn-danger">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
-                                </td>
-                            </tr>
+                            <?php endforeach; ?>
+                            
 
                         </tbody>
                     </table>
                 </div>
 
                 <!-- Paginación -->
-                <nav aria-label="Page navigation">
-                    <ul class="pagination justify-content-center">
-                        <li class="page-item disabled">
-                            <a class="page-link" href="#" tabindex="-1">Anterior</a>
-                        </li>
-                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                        <li class="page-item"><a class="page-link" href="#">2</a></li>
-                        <li class="page-item"><a class="page-link" href="#">3</a></li>
-                        <li class="page-item">
-                            <a class="page-link" href="#">Siguiente</a>
-                        </li>
-                    </ul>
-                </nav>
+                <?= $pager->links() ?>
             </div>
         </div>
     </div>
@@ -157,55 +117,161 @@
                     <h5 class="modal-title">Registrar Nueva Empresa</h5>
                     <button class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <form>
+                <form id="registerBusinessForm">
+                    <input type="hidden" name="<?= csrf_token() ?>" value="<?= csrf_hash() ?>" />
+
                     <div class="modal-body">
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <label class="form-label">Nombre Legal</label>
-                                <input type="text" class="form-control" name="nombre_legal" required>
+                                <input type="text" class="form-control" name="legal_name" required>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">RNC</label>
                                 <input type="text" class="form-control" name="rnc" 
-                                       pattern="\d{9}" 
-                                       title="9 dígitos sin guiones" required>
+                                    pattern="\d{9}" 
+                                    title="9 dígitos sin guiones" required>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Teléfono</label>
-                                <input type="tel" class="form-control" name="telefono" 
-                                       placeholder="Ej: +1-809-555-5555" 
-                                       pattern="\+1-(809|829|849)\d{3}-\d{4}" required>
+                                <input type="tel" 
+                                    class="form-control" 
+                                    name="phone" 
+                                    placeholder="Ej: 8095551234"
+                                    pattern="(809|829|849)\d{7}" 
+                                    title="Formato: 8095551234 (10 dígitos sin +1, guiones o espacios)"
+                                    inputmode="numeric"
+                                    required>
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label">Subsidio Mensual (DOP)</label>
-                                <input type="number" class="form-control" name="subsidio" 
-                                       min="5000" step="500" required>
+                                <label class="form-label">Subsidio Semanal (DOP)</label>
+                                <input type="number" class="form-control" name="daily_subsidy" 
+                                    min="0" step="10" required>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Provincia</label>
-                                <select class="form-select" name="provincia" required>
+                                <select class="form-select" name="province" required>
                                     <option value="">Seleccionar...</option>
                                     <option>Distrito Nacional</option>
                                     <option>Santo Domingo</option>
                                     <option>Santiago</option>
                                 </select>
                             </div>
+
+                            
+                            
                             <div class="col-12">
                                 <label class="form-label">Dirección Fiscal</label>
-                                <textarea class="form-control" name="direccion" 
-                                          placeholder="Ej: Av. 27 de Febrero #123, Santo Domingo D.N." 
-                                          required></textarea>
+                                <textarea class="form-control" name="address" 
+                                        placeholder="Ej: Av. 27 de Febrero #123, Santo Domingo D.N." 
+                                        required></textarea>
                             </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Usuario</label>
+                                <input type="text" class="form-control" name="username" required autocomplete="off">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Contraseña</label>
+                                <input type="password" class="form-control" name="password" required autocomplete="new-password">
+                            </div>
+
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary">Registrar Empresa</button>
+                        <button type="submit" class="btn btn-primary" id="submitBusiness">
+                            
+                        <span id="buttonText">Registrar Empresa</span>
+
+                        <span id="loadingSpinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                        </button>
+
                     </div>
                 </form>
             </div>
         </div>
     </div>
 
-    <script src="../../js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.querySelector('#registerBusinessForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Get form elements
+            const form = e.target;
+            const submitButton = form.querySelector('button[type="submit"]');
+            const buttonText = document.getElementById('buttonText');
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            
+            // Show loading state
+            submitButton.disabled = true;
+            buttonText.textContent = 'Procesando...';
+            loadingSpinner.classList.remove('d-none');
+            
+            try {
+                // Get all form data
+                const formData = new FormData(form);
+                const data = Object.fromEntries(formData.entries());
+                const csrfToken = data['<?= csrf_token() ?>'];
+
+                
+                // 1. First register the user
+                const userResponse = await axios.post('/api/user/register', {
+                    username: data.username,
+                    password: data.password,
+                    role_id: 3
+                }, {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN': csrfToken  // CodeIgniter looks for this header
+                    }
+                });
+                
+                const userId = userResponse.data.user_id;
+                const newCsrfToken = userResponse.data.new_csrf_token;
+                
+                // 2. Then create the business with the user_id
+                const businessResponse = await axios.post('/api/businesses/create', {
+                    legal_name: data.legal_name,
+                    rnc: data.rnc,
+                    phone: data.phone,
+                    daily_subsidy: data.daily_subsidy,
+                    province: data.province,
+                    address: data.address,
+                    user_id: userId  // Add the user_id to business record
+                }
+                , {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        //'X-CSRF-TOKEN': newCsrfToken  // CodeIgniter looks for this header
+                    }
+                });
+
+                if(userResponse.data.status !== 'success' || businessResponse.data.status !== 'success') {
+                    throw new Error(userResponse.data.message || businessResponse.data.message);
+                }
+                
+                // Success handling
+                alert('Empresa y usuario registrados exitosamente!');
+                form.reset();
+                            
+            } catch (error) {
+                console.error('Error:', error.response.data.error_details || error.response.data.message);
+                console.error(error.response.data.error);
+                console.error(error.response.data.data);
+                let errorMessage = 'Ocurrió un error al registrar';
+                
+                if (error.response) {
+                    errorMessage = error.response.data.message || errorMessage;
+                }
+                
+                alert(errorMessage);
+            } finally {
+                // Reset button state
+                submitButton.disabled = false;
+                buttonText.textContent = 'Registrar Empresa';
+                loadingSpinner.classList.add('d-none');
+            }
+        });
+    </script>
 </body>
 </html>

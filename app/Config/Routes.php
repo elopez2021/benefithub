@@ -31,6 +31,7 @@ $routes->group('api', ['filter' => 'authFilter'], function ($routes) {
 
 $routes->group('admin', ['filter' => 'authFilter'], function ($routes) {
     $routes->get('dashboard', 'AdminController::index');
+    $routes->get('business', 'AdminController::showBusiness');
 });
 
 $routes->group('employee', ['filter' => 'authFilter'], function ($routes) {

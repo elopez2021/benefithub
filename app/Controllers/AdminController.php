@@ -18,4 +18,17 @@ class AdminController extends BaseController
         
         return view('dashboard/admin/index', ['businesses' => $data, 'totalBusinesses' => $totalBusinesses]);
     }
+    
+    public function showBusiness()
+    {
+        $model = new BusinessModel();
+    
+        // Configurar paginación (10 registros por página)
+        $data = [
+            'businesses' => $model->orderBy('created_at', 'DESC')->paginate(10),
+            'pager' => $model->pager
+        ];
+        
+        return view('dashboard/admin/business', $data);
+    }
 }

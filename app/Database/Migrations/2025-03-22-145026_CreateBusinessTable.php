@@ -49,6 +49,10 @@ class CreateBusinessTable extends Migration
                 'constraint' => 1,  // Values can be 0 or 1
                 'default'    => 1,  // Default is active (1)
             ],
+            'email' => [
+                'type'       => 'VARCHAR',
+                'constraint' => '100',
+            ],
             'created_at' => [
                 'type' => 'DATETIME',
                 'null' => true,

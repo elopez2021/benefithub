@@ -41,41 +41,56 @@
                 </div>
 
                 <!-- Tabla de Empresas -->
-                <table class="table table-hover">
-                    <thead>
-                        <tr>
-                            <th>Nombre</th>
-                            <th>Contacto</th>
-                            <th>Subsidio Diario</th>
-                            <th>Estado</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                    <?php if (!empty($businesses)): ?>
-                    <?php foreach ($businesses as $business): ?>
-                    <tr>
-                        <td><?= esc($business['legal_name']) ?></td>
-                        <td><?= esc($business['rnc']) ?></td>
-                        <td><?= esc($business['phone']) ?></td>
-                        <td><?= esc($business['daily_subsidy']) ?> DOP</td>
-                        <td><?= esc($business['province']) ?></td>
-                        <td><?= esc($business['address']) ?></td>
-                        <td>
-                            <?= $business['status'] == 1 ? '<span class="badge bg-success">Active</span>' : '<span class="badge bg-danger">Inactive</span>' ?>
-                        </td>
-                        <td>
-                            <!-- Example Actions: Update or Delete -->
-                            <a href="/business/update/<?= $business['id'] ?>" class="btn btn-warning btn-sm"><i class="bi bi-pencil"></i></a>
-                            <a href="/business/updateStatus/<?= $business['id'] ?>/<?= $business['status'] == 1 ? 0 : 1 ?>" class="btn btn-info btn-sm">
-                            <i class="bi bi-trash"></i>
-                            </a>
-                        </td>
-                    </tr>
-                    <?php endforeach; ?>
-                    <?php endif; ?>
-                    </tbody>
-                </table>
+                <div class="table table-hover">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Nombre Legal</th>
+                                <th>RNC</th>
+                                <th>Email</th>
+                                <th>Teléfono</th>
+                                <th>Subsidio Diario</th>
+                                <th>Provincia</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($businesses as $business): ?>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div>
+                                                <h6 class="mb-0"><?= esc($business['legal_name']) ?></h6>
+                                                <small class="text-muted"><?= esc($business['email']) ?></small>
+                                            </div> 
+                                        </div>
+                                    </td>
+                                    <td><?= esc($business['rnc']) ?></td>
+                                    <td><?= esc($business['email']) ?></td>
+                                    <td><?= esc($business['phone']) ?></td>
+                                    <td>RD$ <?= number_format($business['daily_subsidy'], 2) ?></td>
+                                    <td><?= esc($business['province']) ?></td>
+                                    <td>
+                                        <span class="badge bg-<?= $business['status'] == 1 ? 'success' : 'danger' ?>">
+                                            <?= $business['status'] == 1 ? 'Activo' : 'Inactivo' ?>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-sm btn-warning me-2">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-danger">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+
+                            <?php endforeach; ?>
+                            
+
+                        </tbody>
+                    </table>
             </div>
 
             <!-- Sección Restaurantes -->
@@ -141,6 +156,10 @@
                                 <input type="text" class="form-control" name="rnc" 
                                     pattern="\d{9}" 
                                     title="9 dígitos sin guiones" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Email</label>
+                                <input type="text" class="form-control" name="email" required>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Teléfono</label>
@@ -305,6 +324,7 @@
                     daily_subsidy: data.daily_subsidy,
                     province: data.province,
                     address: data.address,
+                    email: data.email,
                     user_id: userId  // Add the user_id to business record
                 }
                 , {

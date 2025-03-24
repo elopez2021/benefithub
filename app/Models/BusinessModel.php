@@ -7,7 +7,7 @@ class BusinessModel extends Model
 {
     protected $table      = 'businesses';  // Table name
     protected $primaryKey = 'id';  // The primary key of the table
-    protected $allowedFields = ['user_id','legal_name', 'rnc', 'phone', 'daily_subsidy', 'province', 'address', 'status'];  // Fields
+    protected $allowedFields = ['user_id', 'email', 'legal_name', 'rnc', 'phone', 'daily_subsidy', 'province', 'address', 'status'];  // Fields
     
     // To automatically use timestamps
     protected $useTimestamps = true;
