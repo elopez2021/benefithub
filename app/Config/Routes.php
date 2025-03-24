@@ -21,6 +21,14 @@ $routes->get('logout', 'AuthController::logout');
 
 */
 
+
+
+$routes->group('api', ['filter' => 'authFilter'], function ($routes) {
+    $routes->post('user/register', 'AuthController::register', ['filter' => 'authFilter']);
+    $routes->post('businesses/create', 'BusinessController::create', ['filter' => 'authFilter']);
+});
+
+
 $routes->group('admin', ['filter' => 'authFilter'], function ($routes) {
     $routes->get('dashboard', 'AdminController::index');
 });

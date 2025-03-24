@@ -55,6 +55,38 @@ class AuthController extends ResourceController
         ]);
     }
 
+    public function register()
+    {
+        $data = $this->request->getJSON(true);
+        
+        // Validate input
+        if (!isset($data['username']) || !isset($data['password']) || !isset($data['role_id'])) {
+            return $this->fail('Usuario, contraseña y rol son requeridos', 400);
+        }
+        
+        // Create user
+        $userModel = new UserModel();
+        
+        try {
+            $userData = [
+                'username' => $data['username'],
+                'password' => password_hash($data['password'], PASSWORD_BCRYPT),
+                'role_id' => $data['role_id']
+            ];
+            
+            $userId = $userModel->insert($userData);
+            
+            return $this->respondCreated([
+                'status' => 'success',
+                'user_id' => $userId,
+                'new_csrf_token' => csrf_hash()
+            ]);
+            
+        } catch (\Exception $e) {
+            return $this->fail('Registration failed: ' . $e->getMessage(), 500);
+        }
+    }
+
     public function redirect()
     {
         $roleId = $this->request->getGet('role_id');
