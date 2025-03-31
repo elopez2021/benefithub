@@ -55,6 +55,17 @@ class AuthController extends ResourceController
         ]);
     }
 
+    public function checkSession()
+    {
+        return $this->respond([
+            'user_id' => session()->get('user_id'),
+            'role_id' => session()->get('role_id'),
+            'username' => session()->get('username'),
+            'full_session' => session()->get() // Debugging full session data
+        ]);
+    }
+
+
     public function register()
     {
         $data = $this->request->getJSON(true); // <-- Now available in both try and catch

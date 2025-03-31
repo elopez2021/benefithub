@@ -11,6 +11,7 @@ $routes->get('/contact', 'Home::contact'); // Contact section
 $routes->get('/login', 'Home::login'); // Login page
 $routes->post('login/submit', 'AuthController::login');
 $routes->get('logout', 'AuthController::logout');
+$routes->get('checksession', 'AuthController::checkSession');
 
 /*
 

@@ -177,7 +177,7 @@
         axios.post('<?= route_to('login/submit'); ?>', data, {
             headers: {
                 'Content-Type': 'application/json', // Set the Content-Type to JSON
-            },
+            }, withCredentials: true
             })        
             .then(response => {
             
