@@ -26,6 +26,7 @@ $routes->get('logout', 'AuthController::logout');
 $routes->group('api', ['filter' => 'authFilter'], function ($routes) {
     $routes->post('user/register', 'AuthController::register', ['filter' => 'authFilter']);
     $routes->post('businesses/create', 'BusinessController::create', ['filter' => 'authFilter']);
+    $routes->put('businesses/(:num)', 'BusinessController::update/$1');
 });
 
 

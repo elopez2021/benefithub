@@ -25,7 +25,10 @@ class AdminController extends BaseController
     
         // Configurar paginación (10 registros por página)
         $data = [
-            'businesses' => $model->orderBy('created_at', 'DESC')->paginate(10),
+            'businesses' => $model->select('businesses.*, users.username AS username')
+                          ->join('users', 'users.id = businesses.user_id', 'inner')
+                          ->orderBy('businesses.created_at', 'DESC')
+                          ->paginate(10),
             'pager' => $model->pager
         ];
         

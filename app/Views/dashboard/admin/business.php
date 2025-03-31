@@ -87,9 +87,21 @@
                                         </span>
                                     </td>
                                     <td>
-                                        <button class="btn btn-sm btn-warning me-2">
+                                       
+                                        <button class="btn btn-sm btn-warning me-2 edit-business-btn" 
+                                                data-bs-toggle="modal" 
+                                                data-bs-target="#editBusiness"
+                                                data-business-id="<?= $business['id'] ?>"
+                                                data-legal-name="<?= htmlspecialchars($business['legal_name']) ?>"
+                                                data-rnc="<?= htmlspecialchars($business['rnc']) ?>"
+                                                data-phone="<?= htmlspecialchars($business['phone']) ?>"
+                                                data-subsidy="<?= htmlspecialchars($business['daily_subsidy']) ?>"
+                                                data-province="<?= htmlspecialchars($business['province']) ?>"
+                                                data-address="<?= htmlspecialchars($business['address']) ?>"
+                                                data-username="<?= htmlspecialchars($business['username']) ?>">
                                             <i class="bi bi-pencil"></i>
                                         </button>
+                                            
                                         <button class="btn btn-sm btn-danger">
                                             <i class="bi bi-trash"></i>
                                         </button>
@@ -119,7 +131,7 @@
                 </div>
                 <form id="registerBusinessForm">
                     <input type="hidden" name="<?= csrf_token() ?>" value="<?= csrf_hash() ?>" />
-
+                    
                     <div class="modal-body">
                         <div class="row g-3">
                             <div class="col-md-6">
@@ -192,7 +204,222 @@
         </div>
     </div>
 
+    <!-- Modal Editar Empresa -->
+    <div class="modal fade" id="editBusiness">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Editar Empresa</h5>
+                    <button class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="editBusinessForm" method="PUT">
+                    <input type="hidden" name="<?= csrf_token() ?>" value="<?= csrf_hash() ?>" />
+
+                    <input type="hidden" name="business_id">
+
+                    <div class="modal-body">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Nombre Legal</label>
+                                <input type="text" class="form-control" name="legal_name" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">RNC</label>
+                                <input type="text" class="form-control" name="rnc" 
+                                    pattern="\d{9}" 
+                                    title="9 dígitos sin guiones" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Teléfono</label>
+                                <input type="tel" 
+                                    class="form-control" 
+                                    name="phone" 
+                                    placeholder="Ej: 8095551234"
+                                    pattern="(809|829|849)\d{7}" 
+                                    title="Formato: 8095551234 (10 dígitos sin +1, guiones o espacios)"
+                                    inputmode="numeric"
+                                    required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Subsidio Semanal (DOP)</label>
+                                <input type="number" class="form-control" name="daily_subsidy" 
+                                    min="0" step="10" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Provincia</label>
+                                <select class="form-select" name="province" required>
+                                    <option value="">Seleccionar...</option>
+                                    <option>Distrito Nacional</option>
+                                    <option>Santo Domingo</option>
+                                    <option>Santiago</option>
+                                </select>
+                            </div>
+
+                            
+                            
+                            <div class="col-12">
+                                <label class="form-label">Dirección Fiscal</label>
+                                <textarea class="form-control" name="address" 
+                                        placeholder="Ej: Av. 27 de Febrero #123, Santo Domingo D.N." 
+                                        required></textarea>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Usuario</label>
+                                <input type="text" class="form-control" name="username" required autocomplete="off">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Contraseña</label>
+                                <input type="password" class="form-control" name="password" required autocomplete="new-password">
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary" id="editBusinessSubmit">
+                            
+                        <span id="buttonText">Editar Empresa</span>
+
+                        <span id="loadingSpinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                        </button>
+
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <script>
+
+        document.getElementById('editBusiness').addEventListener('show.bs.modal', function(event) {
+            const button = event.relatedTarget; // Button that triggered the modal
+            const isEdit = button.classList.contains('edit-business-btn');
+            
+            const form = this.querySelector('form');
+            const modalTitle = this.querySelector('.modal-title');
+            const submitText = this.querySelector('#buttonText');
+            
+            if (isEdit) {
+                // Edit mode - populate fields
+                modalTitle.textContent = 'Editar Empresa';
+                submitText.textContent = 'Guardar Cambios';
+                
+                form.querySelector('input[name="business_id"]').value = button.getAttribute('data-business-id');
+                form.querySelector('input[name="legal_name"]').value = button.getAttribute('data-legal-name');
+                form.querySelector('input[name="rnc"]').value = button.getAttribute('data-rnc');
+                form.querySelector('input[name="phone"]').value = button.getAttribute('data-phone');
+                form.querySelector('input[name="daily_subsidy"]').value = button.getAttribute('data-subsidy');
+                form.querySelector('select[name="province"]').value = button.getAttribute('data-province');
+                form.querySelector('textarea[name="address"]').value = button.getAttribute('data-address');
+                form.querySelector('input[name="username"]').value = button.getAttribute('data-username');
+                
+                // Clear password field for edits
+                form.querySelector('input[name="password"]').value = '';
+                form.querySelector('input[name="password"]').removeAttribute('required');
+            } else {
+                // Create mode - reset form
+                form.reset();
+                form.querySelector('input[name="password"]').setAttribute('required', '');
+            }
+        });
+
+        /**
+         * Updates a business row in the table
+         */
+        function updateBusinessRow(businessData) {
+            const row = document.querySelector(`tr[data-business-id="${businessData.id}"]`);
+            if (row) {
+                // Update each cell as needed
+                row.querySelector('[data-field="legal_name"]').textContent = businessData.legal_name;
+                row.querySelector('[data-field="rnc"]').textContent = businessData.rnc;
+                row.querySelector('[data-field="phone"]').textContent = businessData.phone;
+                row.querySelector('[data-field="daily_subsidy"]').textContent = 
+                    `RD$ ${parseFloat(businessData.daily_subsidy).toFixed(2)}`;
+                row.querySelector('[data-field="province"]').textContent = businessData.province;
+                
+                // Update the edit button data attributes
+                const editBtn = row.querySelector('.edit-business-btn');
+                editBtn.setAttribute('data-legal-name', businessData.legal_name);
+                editBtn.setAttribute('data-rnc', businessData.rnc);
+                editBtn.setAttribute('data-phone', businessData.phone);
+                editBtn.setAttribute('data-subsidy', businessData.daily_subsidy);
+                editBtn.setAttribute('data-province', businessData.province);
+                editBtn.setAttribute('data-address', businessData.address);
+                editBtn.setAttribute('data-username', businessData.username);
+            }
+        }
+
+
+        document.getElementById('editBusinessForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const form = this;
+            const formData = new FormData(form);
+            const businessId = formData.get('business_id');
+            const isEdit = !!businessId;
+            
+            // Get CSRF token
+            const csrfToken = document.querySelector('input[name="<?= csrf_token() ?>"]').value;
+            
+            // Show loading state
+            const submitBtn = form.querySelector('#editBusinessSubmit');
+            submitBtn.disabled = true;
+            submitBtn.querySelector('#buttonText').textContent = 'Guardando...';
+            submitBtn.querySelector('#loadingSpinner').classList.remove('d-none');
+            
+            // Prepare the request
+            const requestConfig = {
+                method: isEdit ? 'PUT' : 'POST',
+                url: isEdit ? `/api/businesses/${businessId}` : '/api/businesses',
+                headers: {
+                      'Content-Type': 'application/json'
+                },
+                data: Object.fromEntries(formData)
+            };
+            
+            // Remove null/empty values (optional)
+            requestConfig.data = Object.fromEntries(
+                Object.entries(requestConfig.data).filter(([_, v]) => v != null && v !== '')
+            );
+            
+            // Execute the request
+            axios(requestConfig)
+                .then(response => {
+                    // Hide modal on success
+                    bootstrap.Modal.getInstance(form.closest('.modal')).hide();
+                    
+                    // Show success message
+                    alert('Empresa actualizada exitosamente!');
+                    updateBusinessRow(response.data.business);
+                    
+                    // Refresh business data or update specific row
+
+                    /*
+                    if (isEdit) {
+                        
+                    } else {
+                        addNewBusinessRow(response.data.business);
+                    }
+                        */
+                                        
+                    // Update CSRF token if returned
+                    
+                })
+                .catch(error => {
+                    console.error('Error:', error.response.data.errors);
+                    
+                    // Handle validation errors
+                    alert('Error: ' + (error.response.data.message || 'Ocurrió un error'));
+                })
+                .finally(() => {
+                    // Reset button state
+                    submitBtn.disabled = false;
+                    submitBtn.querySelector('#buttonText').textContent = 
+                        isEdit ? 'Guardar Cambios' : 'Registrar Empresa';
+                    submitBtn.querySelector('#loadingSpinner').classList.add('d-none');
+                });
+        });
+
         document.querySelector('#registerBusinessForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
@@ -275,3 +502,74 @@
     </script>
 </body>
 </html>
+
+
+<!--
+/**
+ * Updates a business row in the table
+ */
+function updateBusinessRow(businessData) {
+    const row = document.querySelector(`tr[data-business-id="${businessData.id}"]`);
+    if (row) {
+        // Update each cell as needed
+        row.querySelector('[data-field="legal_name"]').textContent = businessData.legal_name;
+        row.querySelector('[data-field="rnc"]').textContent = businessData.rnc;
+        row.querySelector('[data-field="phone"]').textContent = businessData.phone;
+        row.querySelector('[data-field="daily_subsidy"]').textContent = 
+            `RD$ ${parseFloat(businessData.daily_subsidy).toFixed(2)}`;
+        row.querySelector('[data-field="province"]').textContent = businessData.province;
+        
+        // Update the edit button data attributes
+        const editBtn = row.querySelector('.edit-business-btn');
+        editBtn.setAttribute('data-legal-name', businessData.legal_name);
+        editBtn.setAttribute('data-rnc', businessData.rnc);
+        editBtn.setAttribute('data-phone', businessData.phone);
+        editBtn.setAttribute('data-subsidy', businessData.daily_subsidy);
+        editBtn.setAttribute('data-province', businessData.province);
+        editBtn.setAttribute('data-address', businessData.address);
+        editBtn.setAttribute('data-username', businessData.username);
+    }
+}
+
+/**
+ * Adds a new business row to the table
+ */
+function addNewBusinessRow(businessData) {
+    // Implement according to your table structure
+    // This will depend on how you render your table rows
+    console.log('New business created:', businessData);
+    // location.reload(); // Simple option if you prefer full refresh
+}
+
+/**
+ * Shows a toast notification
+ */
+function showToast(message, type = 'success', duration = 5000) {
+    const toastContainer = document.getElementById('toastContainer') || createToastContainer();
+    const toastId = 'toast-' + Date.now();
+    
+    const toast = document.createElement('div');
+    toast.id = toastId;
+    toast.className = `toast show align-items-center text-white bg-${type}`;
+    toast.setAttribute('role', 'alert');
+    toast.setAttribute('aria-live', 'assertive');
+    toast.setAttribute('aria-atomic', 'true');
+    toast.innerHTML = `
+        <div class="d-flex">
+            <div class="toast-body">${message}</div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" 
+                    data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    `;
+    
+    toastContainer.appendChild(toast);
+    
+    // Auto-hide after duration
+    setTimeout(() => {
+        const bsToast = bootstrap.Toast.getOrCreateInstance(toast);
+        bsToast.hide();
+        toast.addEventListener('hidden.bs.toast', () => toast.remove());
+    }, duration);
+}
+
+    -->

@@ -76,28 +76,54 @@ class BusinessController extends BaseController
     }
 
     // Method to update business
-    public function updateBusiness($id)
+    public function update($id)
     {
+        // Get JSON input
+        $data = $this->request->getJSON(true);
+
         $businessModel = new BusinessModel();
-
-        // Collect post data
-        $data = [
-            'legal_name' => $this->request->getPost('legal_name'),
-            'rnc' => $this->request->getPost('rnc'),
-            'phone' => $this->request->getPost('phone'),
-            'subsidy' => $this->request->getPost('subsidy'),
-            'province' => $this->request->getPost('province'),
-            'address' => $this->request->getPost('address'),
+        
+        // Validate input
+        $rules = [
+            'legal_name' => 'required|min_length[3]|max_length[255]',
+            'rnc' => 'required|regex_match[/^\d{9}$/]',
+            'phone' => 'required|regex_match[(809|829|849)\d{7}]',
+            'daily_subsidy' => 'required|numeric|greater_than_equal_to[0]',
+            'province' => 'required',
+            'address' => 'required|min_length[5]',
+            'username' => 'required|min_length[3]'
         ];
-
-        // Validate and update business
-        $validationResult = $businessModel->updateBusiness($id, $data);
-        if ($validationResult === true) {
-            return redirect()->to('/business');
-        } else {
-            // If validation fails, pass the error messages to the view
-            return view('business/edit', ['validation' => $validationResult]);
+        
+        if (!$this->validate($rules)) {
+            return $this->response
+                ->setStatusCode(400)
+                ->setJSON([
+                    'status' => 'error',
+                    'errors' => $this->validator->getErrors(),
+                ]);
         }
+        
+        // Remove password if empty
+        if (empty($data['password'])) {
+            unset($data['password']);
+        }
+        
+        // Update business
+        if ($businessModel->update($id, $data)) {
+            return $this->response
+                ->setJSON([
+                    'status' => 'success',
+                    'message' => 'Empresa actualizada correctamente',
+                    'business' => $businessModel->find($id),
+                ]);
+        }
+        
+        return $this->response
+            ->setStatusCode(500)
+            ->setJSON([
+                'status' => 'error',
+                'message' => 'Error al actualizar la empresa',
+            ]);
     }
 
     // Method to update business status

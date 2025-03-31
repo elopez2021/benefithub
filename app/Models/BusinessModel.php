@@ -52,7 +52,9 @@ class BusinessModel extends Model
 
     public function getAllBusinesses()
     {
-        return $this->findAll();  // Return all the records from the table
+        return $this->select('businesses.*, users.username')
+                    ->join('users', 'users.id = businesses.user_id', 'inner')
+                    ->findAll();
     }
 
     // Function to validate business data
