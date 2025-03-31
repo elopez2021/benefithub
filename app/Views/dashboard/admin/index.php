@@ -175,7 +175,7 @@
                             <div class="col-md-6">
                                 <label class="form-label">Subsidio Semanal (DOP)</label>
                                 <input type="number" class="form-control" name="daily_subsidy" 
-                                    min="0" step="10" required>
+                                    min="0" step="1" required>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Provincia</label>

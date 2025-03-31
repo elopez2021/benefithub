@@ -98,7 +98,8 @@
                                                 data-subsidy="<?= htmlspecialchars($business['daily_subsidy']) ?>"
                                                 data-province="<?= htmlspecialchars($business['province']) ?>"
                                                 data-address="<?= htmlspecialchars($business['address']) ?>"
-                                                data-username="<?= htmlspecialchars($business['username']) ?>">
+                                                data-username="<?= htmlspecialchars($business['username']) ?>"
+                                                data-email="<?= htmlspecialchars($business['email']) ?>">
                                             <i class="bi bi-pencil"></i>
                                         </button>
                                             
@@ -145,6 +146,11 @@
                                     title="9 dígitos sin guiones" required>
                             </div>
                             <div class="col-md-6">
+                                <label class="form-label">Email</label>
+                                <input type="text" class="form-control" name="email" required>
+                            </div>
+                            
+                            <div class="col-md-6">
                                 <label class="form-label">Teléfono</label>
                                 <input type="tel" 
                                     class="form-control" 
@@ -158,7 +164,7 @@
                             <div class="col-md-6">
                                 <label class="form-label">Subsidio Semanal (DOP)</label>
                                 <input type="number" class="form-control" name="daily_subsidy" 
-                                    min="0" step="10" required>
+                                    min="0" step="1" required>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Provincia</label>
@@ -230,6 +236,10 @@
                                     title="9 dígitos sin guiones" required>
                             </div>
                             <div class="col-md-6">
+                                <label class="form-label">Email</label>
+                                <input type="text" class="form-control" name="email" required>
+                            </div>
+                            <div class="col-md-6">
                                 <label class="form-label">Teléfono</label>
                                 <input type="tel" 
                                     class="form-control" 
@@ -243,7 +253,7 @@
                             <div class="col-md-6">
                                 <label class="form-label">Subsidio Semanal (DOP)</label>
                                 <input type="number" class="form-control" name="daily_subsidy" 
-                                    min="0" step="10" required>
+                                    min="0" step="1" required>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Provincia</label>
@@ -312,6 +322,7 @@
                 form.querySelector('select[name="province"]').value = button.getAttribute('data-province');
                 form.querySelector('textarea[name="address"]').value = button.getAttribute('data-address');
                 form.querySelector('input[name="username"]').value = button.getAttribute('data-username');
+                form.querySelector('input[name="email"]').value = button.getAttribute('data-email');
                 
                 // Clear password field for edits
                 form.querySelector('input[name="password"]').value = '';
@@ -323,31 +334,8 @@
             }
         });
 
-        /**
-         * Updates a business row in the table
-         */
-        function updateBusinessRow(businessData) {
-            const row = document.querySelector(`tr[data-business-id="${businessData.id}"]`);
-            if (row) {
-                // Update each cell as needed
-                row.querySelector('[data-field="legal_name"]').textContent = businessData.legal_name;
-                row.querySelector('[data-field="rnc"]').textContent = businessData.rnc;
-                row.querySelector('[data-field="phone"]').textContent = businessData.phone;
-                row.querySelector('[data-field="daily_subsidy"]').textContent = 
-                    `RD$ ${parseFloat(businessData.daily_subsidy).toFixed(2)}`;
-                row.querySelector('[data-field="province"]').textContent = businessData.province;
-                
-                // Update the edit button data attributes
-                const editBtn = row.querySelector('.edit-business-btn');
-                editBtn.setAttribute('data-legal-name', businessData.legal_name);
-                editBtn.setAttribute('data-rnc', businessData.rnc);
-                editBtn.setAttribute('data-phone', businessData.phone);
-                editBtn.setAttribute('data-subsidy', businessData.daily_subsidy);
-                editBtn.setAttribute('data-province', businessData.province);
-                editBtn.setAttribute('data-address', businessData.address);
-                editBtn.setAttribute('data-username', businessData.username);
-            }
-        }
+
+        
 
 
         document.getElementById('editBusinessForm').addEventListener('submit', function(e) {
@@ -390,7 +378,7 @@
                     
                     // Show success message
                     alert('Empresa actualizada exitosamente!');
-                    updateBusinessRow(response.data.business);
+                    window.location.reload();
                     
                     // Refresh business data or update specific row
 
@@ -464,6 +452,7 @@
                     daily_subsidy: data.daily_subsidy,
                     province: data.province,
                     address: data.address,
+                    email: data.email,
                     user_id: userId  // Add the user_id to business record
                 }
                 , {
@@ -473,13 +462,12 @@
                     }
                 });
 
-                if(userResponse.data.status !== 'success' || businessResponse.data.status !== 'success') {
-                    throw new Error(userResponse.data.message || businessResponse.data.message);
-                }
+                
                 
                 // Success handling
                 alert('Empresa y usuario registrados exitosamente!');
                 form.reset();
+                windows.location.reload();
                             
             } catch (error) {
                 console.error('Error:', error.response.data.error_details || error.response.data.message);

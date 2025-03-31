@@ -57,7 +57,7 @@ class AuthController extends ResourceController
 
     public function register()
     {
-        $data = $this->request->getJSON(true);
+        $data = $this->request->getJSON(true); // <-- Now available in both try and catch
         
         // Validate input
         if (!isset($data['username']) || !isset($data['password']) || !isset($data['role_id'])) {
@@ -71,7 +71,7 @@ class AuthController extends ResourceController
             $userData = [
                 'username' => $data['username'],
                 'password' => password_hash($data['password'], PASSWORD_BCRYPT),
-                'role_id' => $data['role_id']
+                'role_id'  => $data['role_id']
             ];
             
             $userId = $userModel->insert($userData);
@@ -83,7 +83,14 @@ class AuthController extends ResourceController
             ]);
             
         } catch (\Exception $e) {
-            return $this->fail('Registration failed: ' . $e->getMessage(), 500);
+            return $this->response
+                    ->setStatusCode(500)
+                    ->setJSON([
+                        'status'  => 'error',
+                        'message' => 'Database insert failed',
+                        'data'    => $data, // Now works!
+                        'error'   => $e->getMessage()
+                    ]);
         }
     }
 

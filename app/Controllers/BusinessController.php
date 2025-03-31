@@ -25,6 +25,7 @@ class BusinessController extends BaseController
         $request = service('request');
 
         $json = $request->getJSON();
+        
 
         // Collect raw POST data without validation
         $data = [
