@@ -26,6 +26,7 @@ $routes->get('logout', 'AuthController::logout');
 $routes->group('api', ['filter' => 'authFilter'], function ($routes) {
     $routes->post('user/register', 'AuthController::register', ['filter' => 'authFilter']);
     $routes->post('businesses/create', 'BusinessController::create', ['filter' => 'authFilter']);
+    $routes->post('restaurants/create', 'RestaurantController::create', ['filter' => 'authFilter']);
     $routes->put('businesses/(:num)', 'BusinessController::update/$1');
 });
 
@@ -33,6 +34,7 @@ $routes->group('api', ['filter' => 'authFilter'], function ($routes) {
 $routes->group('admin', ['filter' => 'authFilter'], function ($routes) {
     $routes->get('dashboard', 'AdminController::index');
     $routes->get('business', 'AdminController::showBusiness');
+    $routes->get('restaurants', 'AdminController::showRestaurants');
 });
 
 $routes->group('employee', ['filter' => 'authFilter'], function ($routes) {
