@@ -28,6 +28,7 @@ $routes->group('api', ['filter' => 'authFilter'], function ($routes) {
     $routes->post('businesses/create', 'BusinessController::create', ['filter' => 'authFilter']);
     $routes->post('restaurants/create', 'RestaurantController::create', ['filter' => 'authFilter']);
     $routes->put('businesses/(:num)', 'BusinessController::update/$1');
+    $routes->put('restaurants/(:num)', 'RestaurantController::update/$1');
 });
 
 

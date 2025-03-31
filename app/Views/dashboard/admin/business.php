@@ -452,6 +452,7 @@
                     province: data.province,
                     address: data.address,
                     email: data.email,
+                    password: form.querySelector('[name="password"]').value || undefined,
                     user_id: userId  // Add the user_id to business record
                 }
                 , {

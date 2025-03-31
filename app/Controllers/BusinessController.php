@@ -108,14 +108,20 @@ class BusinessController extends BaseController
         if (empty($data['password'])) {
             unset($data['password']);
         }
+
+        
         
         // Update business
         if ($businessModel->update($id, $data)) {
+            
+            if (isset($data['username']) || isset($data['password'])) {
+                $this->updateUserCredentials($businessModel->find($id)['user_id'], $data);
+            }
+            
             return $this->response
                 ->setJSON([
                     'status' => 'success',
                     'message' => 'Empresa actualizada correctamente',
-                    'business' => $businessModel->find($id),
                 ]);
         }
         
@@ -125,6 +131,24 @@ class BusinessController extends BaseController
                 'status' => 'error',
                 'message' => 'Error al actualizar la empresa',
             ]);
+    }
+
+    protected function updateUserCredentials($userId, $data)
+    {
+        $userModel = new \App\Models\UserModel();
+        $userData = [];
+        
+        if (isset($data['username'])) {
+            $userData['username'] = $data['username'];
+        }
+        
+        if (isset($data['password'])) {
+            $userData['password'] = password_hash($data['password'], PASSWORD_BCRYPT);
+        }
+        
+        if (!empty($userData)) {
+            $userModel->update($userId, $userData);
+        }
     }
 
     // Method to update business status

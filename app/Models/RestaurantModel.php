@@ -40,7 +40,7 @@ class RestaurantModel extends Model
     protected $validationRules = [
         'user_id' => 'required|numeric',
         'commercial_name' => 'required|max_length[100]',
-        'rnc' => 'required|exact_length[9]|is_unique[restaurants.rnc]',
+        'rnc' => 'required|exact_length[9]',
         'phone' => 'required|max_length[15]',
         'address' => 'required|max_length[100]',
         'province' => 'required|max_length[100]',
