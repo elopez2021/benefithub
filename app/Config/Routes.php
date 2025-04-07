@@ -33,7 +33,12 @@ $routes->group('api', ['filter' => 'authFilter'], function ($routes) {
     
     $routes->post('category/create', 'CategoryController::create');
 
+
+    $routes->post('product/create', 'ProductsController::create');
+
+
 });
+
 
 
 $routes->group('admin', ['filter' => 'authFilter'], function ($routes) {

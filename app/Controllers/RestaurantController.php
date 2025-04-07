@@ -15,7 +15,32 @@ class RestaurantController extends BaseController
 {
     public function index()
     {
-        return view('dashboard/restaurants/index');
+        $productoModel = new \App\Models\ProductsModel();
+        $userId = session()->get('user_id');
+
+        $restaurant = (new \App\Models\RestaurantModel())
+            ->where('user_id', $userId)
+            ->first();
+
+        if (!$restaurant) {
+            return $this->response->setStatusCode(404)->setJSON(['error' => 'Restaurante no encontrado.']);
+        }
+
+        $productos = $productoModel
+            ->select('products.*, restaurant_categories.name AS category_name, restaurant_categories.description AS category_description')
+            ->join('product_category', 'product_category.product_id = products.id')
+            ->join('restaurant_categories', 'restaurant_categories.id = product_category.category_id')
+            ->where('products.restaurant_id', $restaurant['id'])
+            ->orderBy('products.created_at', 'DESC')
+            ->findAll();
+        
+
+        
+        $categories = (new CategoryModel())
+            ->where('restaurant_id', $restaurant['id'])
+            ->findAll();
+
+        return view('dashboard/restaurants/index', ['productos' => $productos, 'categories' => $categories]);
     }
 
     public function create()
