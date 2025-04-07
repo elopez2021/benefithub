@@ -25,17 +25,22 @@ class AuthFilter implements FilterInterface
         $route = uri_string(); // Get the current route without base_url()
 
         // Check access based on role
-        if (strpos($route, 'admin/dashboard') !== false && $role_id != 1) {
+        if (strpos($route, 'admin') === 0 && $role_id != 1) {
             return redirect()->to(base_url('login'))->with('error', 'Acceso no permitido.');
         }
-
-        if (strpos($route, 'employee/dashboard') !== false && $role_id != 2) {
+        
+        if (strpos($route, 'employee') === 0 && $role_id != 2) {
             return redirect()->to(base_url('login'))->with('error', 'Acceso no permitido.');
         }
-
-        if (strpos($route, 'business/dashboard') !== false && $role_id != 3) {
+        
+        if (strpos($route, 'business') === 0 && $role_id != 3) {
             return redirect()->to(base_url('login'))->with('error', 'Acceso no permitido.');
         }
+        
+        if (strpos($route, 'restaurant') === 0 && $role_id != 4) {
+            return redirect()->to(base_url('login'))->with('error', 'Acceso no permitido.');
+        }
+        
     }
 
     public function after(RequestInterface $request, ResponseInterface $response, $arguments = null)

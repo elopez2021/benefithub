@@ -6,12 +6,16 @@ use App\Controllers\BaseController;
 use CodeIgniter\HTTP\ResponseInterface;
 use App\Models\RestaurantModel;
 
+use App\Models\CategoryModel;
+use App\Models\ScheduleModel;
+
+
 
 class RestaurantController extends BaseController
 {
     public function index()
     {
-        //
+        return view('dashboard/restaurants/index');
     }
 
     public function create()
@@ -120,5 +124,55 @@ class RestaurantController extends BaseController
         if (!empty($userData)) {
             $userModel->update($userId, $userData);
         }
+    }
+    public function products()
+    {
+        return view('dashboard/restaurants/products');
+    }
+    public function categories()
+    {
+        $user_id = session()->get('user_id'); 
+
+
+        $model = new CategoryModel();
+
+       
+        $categories = $model->select('restaurant_categories.*, restaurants.name AS restaurant_name')
+                            ->join('restaurants', 'restaurants.id = restaurant_categories.restaurant_id', 'inner')
+                            ->where('restaurant_categories.restaurant_id', $user_id) // Filter by restaurant_id
+                            ->orderBy('restaurant_categories.created_at', 'DESC');
+
+        // Add schedules for each category
+        $validCategories = [];
+
+        foreach ($categories as $category) {
+            if (is_array($category) && isset($category['id'])) {
+                $schedules = $model->getSchedules($category['id']);
+                $category['schedules'] = empty($schedules) ? [] : $schedules;
+                $validCategories[] = $category;
+            }
+            // If not valid, just skip
+        }
+
+        $data = [
+            'categories' => $validCategories
+        ];
+
+
+        return view('dashboard/restaurants/category', $data);
+    }
+    public function schedule()
+    {
+        $user_id = session()->get('user_id'); 
+
+
+        $model = new ScheduleModel();
+
+       
+        $categories = $model->select('restaurant_categories.*, restaurants.name AS restaurant_name')
+                            ->join('restaurants', 'restaurants.id = restaurant_categories.restaurant_id', 'inner')
+                            ->where('restaurant_categories.restaurant_id', $user_id) // Filter by restaurant_id
+                            ->orderBy('restaurant_categories.created_at', 'DESC');
+        return view('dashboard/restaurants/schedule');
     }
 }

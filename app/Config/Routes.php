@@ -30,6 +30,9 @@ $routes->group('api', ['filter' => 'authFilter'], function ($routes) {
     $routes->post('restaurants/create', 'RestaurantController::create', ['filter' => 'authFilter']);
     $routes->put('businesses/(:num)', 'BusinessController::update/$1');
     $routes->put('restaurants/(:num)', 'RestaurantController::update/$1');
+    
+    $routes->post('category/create', 'CategoryController::create');
+
 });
 
 
@@ -37,6 +40,12 @@ $routes->group('admin', ['filter' => 'authFilter'], function ($routes) {
     $routes->get('dashboard', 'AdminController::index');
     $routes->get('business', 'AdminController::showBusiness');
     $routes->get('restaurants', 'AdminController::showRestaurants');
+});
+
+$routes->group('restaurant', ['filter' => 'authFilter'], function ($routes) {
+    $routes->get('dashboard', 'RestaurantController::index');
+    $routes->get('products', 'RestaurantController::products');
+    $routes->get('categories', 'RestaurantController::categories');
 });
 
 $routes->group('employee', ['filter' => 'authFilter'], function ($routes) {
