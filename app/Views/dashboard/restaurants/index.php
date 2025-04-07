@@ -45,8 +45,24 @@
                                                         <i class="bi bi-three-dots-vertical"></i>
                                                     </button>
                                                     <ul class="dropdown-menu">
-                                                        <li><a class="dropdown-item" href="#" onclick="editarProducto(<?= esc($producto['id']) ?>)">Editar</a></li>
-                                                        <li><a class="dropdown-item text-danger" href="#" onclick="eliminarProducto(<?= esc($producto['id']) ?>)">Eliminar</a></li>
+                                                        <li>
+                                                        <button
+                                                            data-bs-toggle="modal" 
+                                                            data-bs-target="#editarProductoModal"
+                                                            class="dropdown-item edit-product-btn" 
+                                                            data-id="<?= esc($producto['id']) ?>"
+                                                            data-name="<?= esc($producto['name']) ?>"
+                                                            data-descripcion="<?= esc($producto['description']) ?>"
+                                                            data-price="<?= esc($producto['price']) ?>"
+                                                            data-categories='<?= json_encode(explode(',', $producto['category_ids'])) ?>'
+
+                                                        >
+                                                            Editar
+                                                        </button>
+
+                                                        </li>
+
+                                                        <li><button class="dropdown-item text-danger" onclick="eliminarProducto(<?= esc($producto['id']) ?>)">Eliminar</button></li>
                                                     </ul>
                                                 </div>
                                             </div>
@@ -130,7 +146,102 @@
         </div>
     </div>
 
+    <!-- Modal Editar Producto -->
+    <div class="modal fade" id="editarProductoModal">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Editar Producto</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="editformProducto" onsubmit="editarProductoSave(event)">
+
+                    <input type="hidden" name="id" value="">
+
+
+                    <div class="modal-body">
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label class="form-label">Nombre del Producto</label>
+                                <input type="text" class="form-control" name="name" required>
+                            </div>
+                            
+                        
+
+                            <div class="col-12">
+                                <label class="form-label">Descripción</label>
+                                <textarea class="form-control" rows="3" maxlength="200" name="descripcion"></textarea>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Precio (DOP)</label>
+                                <input type="number" class="form-control" name="price" required>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Categorias Disponibles</label>
+                                <div class="border p-3" style="max-height: 200px; overflow-y: auto;">
+                                    <?php if (!empty($categories)): ?>
+                                   
+                                    <?php foreach ($categories as $category): ?>
+                                    <div class="form-check">
+                                        <input class="form-check-input category-checkbox-edit" name="categories[]" type="checkbox" value="<?= esc($category['id']) ?>">
+                                        <label class="form-check-label"><?= esc($category['name']) ?></label>
+                                    </div>
+                                    <?php endforeach; ?>
+                                    <?php else: ?>
+                                        <p>No se encontraron categorías.</p>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Guardar Producto</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <script>
+
+        document.getElementById('editarProductoModal').addEventListener('show.bs.modal', function(event) {
+            const button = event.relatedTarget; // Button that triggered the modal
+
+            // Get the data from the button
+            const productId = button.getAttribute('data-id');
+            const productName = button.getAttribute('data-name');
+            const productDescription = button.getAttribute('data-descripcion');
+            const productPrice = button.getAttribute('data-price');
+            const productCategories = JSON.parse(button.getAttribute('data-categories'));
+
+            // Set the values into the modal fields
+            document.querySelector('#editformProducto [name="name"]').value = productName;
+            document.querySelector('#editformProducto [name="descripcion"]').value = productDescription;
+            document.querySelector('#editformProducto [name="price"]').value = productPrice;
+
+            // Set categories as checked in the modal
+            document.querySelectorAll('.category-checkbox-edit').forEach(checkbox => {
+                // Check if the category is selected
+                if (productCategories.includes(checkbox.value)) {
+                    checkbox.checked = true;
+                } else {
+                    checkbox.checked = false;
+                }
+            });
+
+            // Set the product ID into the hidden input field
+            const form = document.querySelector('#editformProducto');
+            const idInput = form.querySelector('[name="id"]');
+            idInput.value = productId; // Fix: use productId instead of id
+        });
+
+
+
+
+
         function guardarProducto(event) {
             event.preventDefault(); // Prevent default form submission
 

@@ -27,12 +27,17 @@ class RestaurantController extends BaseController
         }
 
         $productos = $productoModel
-            ->select('products.*, restaurant_categories.name AS category_name, restaurant_categories.description AS category_description')
+            ->select('products.*, 
+                GROUP_CONCAT(restaurant_categories.id) AS category_ids, 
+                GROUP_CONCAT(restaurant_categories.name) AS category_names, 
+                GROUP_CONCAT(restaurant_categories.description) AS category_descriptions')
             ->join('product_category', 'product_category.product_id = products.id')
             ->join('restaurant_categories', 'restaurant_categories.id = product_category.category_id')
             ->where('products.restaurant_id', $restaurant['id'])
+            ->groupBy('products.id')
             ->orderBy('products.created_at', 'DESC')
             ->findAll();
+
         
 
         
@@ -150,10 +155,7 @@ class RestaurantController extends BaseController
             $userModel->update($userId, $userData);
         }
     }
-    public function products()
-    {
-        return view('dashboard/restaurants/products');
-    }
+   
     public function categories()
     {
         $user_id = session()->get('user_id'); 

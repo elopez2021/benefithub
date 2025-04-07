@@ -38,7 +38,7 @@
 <div class="sidebar">
             <h4 class="mb-4">BenefitHub Restaurante</h4>
             <div class="list-group">
-                <a class="list-group-item list-group-item-action bg-transparent text-white border-0 <?= uri_string() === 'restaurant/products' ? 'active' : ''; ?>" href="<?= base_url('restaurant/products'); ?>">
+                <a class="list-group-item list-group-item-action bg-transparent text-white border-0 <?= uri_string() === 'restaurant/dashboard' ? 'active' : ''; ?>" href="<?= base_url('restaurant/dashboard'); ?>">
                     <i class="bi bi-egg-fried me-2"></i>Productos
                 </a>
                 <a class="list-group-item list-group-item-action bg-transparent text-white border-0 <?= uri_string() === 'restaurant/categories' ? 'active' : ''; ?>" href="<?= base_url('restaurant/categories'); ?>">
