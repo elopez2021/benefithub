@@ -46,44 +46,30 @@
                                             
                                             <!-- Display Schedule -->
                                             <?php if (!empty($category['schedules'])): ?>
-                                                <?php foreach ($category['schedules'] as $schedule): ?>
-                                                    <div class="mb-3">
-                                                        <span class="badge bg-primary"><?= esc($schedule['day_of_week']) ?>: <?= esc($schedule['start_time']) ?> - <?= esc($schedule['end_time']) ?></span>
-                                                    </div>
-                                                <?php endforeach; ?>
+                                                <?php
+                                                    $days = array_map(fn($s) => esc($s['day_of_week']), $category['schedules']);
+                                                    $startTime = date('g:i A', strtotime($category['schedules'][0]['start_time']));
+                                                    $endTime = date('g:i A', strtotime($category['schedules'][0]['end_time']));
+                                                ?>
+                                                <div class="mb-2">
+                                                    <span class="badge bg-primary">
+                                                        <?= implode(', ', $days) ?><br>
+                                                        <?= $startTime ?> - <?= $endTime ?>
+                                                    </span>
+                                                </div>
                                             <?php endif; ?>
+
+
                                         </div>
                                     </div>
                                 </div>
                             <?php endforeach; ?>
                         <?php else: ?>
-                            <p>No categories found.</p>
+                            <p>No se encontraron categorías.</p>
                         <?php endif; ?>
                     </div>
 
-                    <!-- Otra Categoría -->
-                    <div class="col-md-4">
-                        <div class="card category-card h-100">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <h5 class="card-title mb-0">Almuerzos</h5>
-                                    <div class="dropdown">
-                                        <button class="btn btn-link" data-bs-toggle="dropdown">
-                                            <i class="bi bi-three-dots-vertical"></i>
-                                        </button>
-                                        <ul class="dropdown-menu">
-                                            <li><a class="dropdown-item" href="#" onclick="editarCategoria(2)">Editar</a></li>
-                                            <li><a class="dropdown-item text-danger" href="#" onclick="eliminarCategoria(2)">Eliminar</a></li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                <p class="text-muted small">Categoría para platos de almuerzo.</p>
-                                <div class="mb-3">
-                                    <span class="badge bg-primary">Horario: 12:00 PM - 3:00 PM</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                
                 </div>
             </div>
         </div>
@@ -122,31 +108,31 @@
                         <div class="mb-3">
                             <label class="form-label">Días de la semana</label>
                             <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="days[]" value="Monday" id="monday">
+                                <input class="form-check-input" type="checkbox" name="days[]" value="Lunes" id="monday">
                                 <label class="form-check-label" for="monday">Lunes</label>
                             </div>
                             <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="days[]" value="Tuesday" id="tuesday">
+                                <input class="form-check-input" type="checkbox" name="days[]" value="Martes" id="tuesday">
                                 <label class="form-check-label" for="tuesday">Martes</label>
                             </div>
                             <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="days[]" value="Wednesday" id="wednesday">
+                                <input class="form-check-input" type="checkbox" name="days[]" value="Miercoles" id="wednesday">
                                 <label class="form-check-label" for="wednesday">Miércoles</label>
                             </div>
                             <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="days[]" value="Thursday" id="thursday">
+                                <input class="form-check-input" type="checkbox" name="days[]" value="Jueves" id="thursday">
                                 <label class="form-check-label" for="thursday">Jueves</label>
                             </div>
                             <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="days[]" value="Friday" id="friday">
+                                <input class="form-check-input" type="checkbox" name="days[]" value="Viernes" id="friday">
                                 <label class="form-check-label" for="friday">Viernes</label>
                             </div>
                             <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="days[]" value="Saturday" id="saturday">
+                                <input class="form-check-input" type="checkbox" name="days[]" value="Sabado" id="saturday">
                                 <label class="form-check-label" for="saturday">Sábado</label>
                             </div>
                             <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="days[]" value="Sunday" id="sunday">
+                                <input class="form-check-input" type="checkbox" name="days[]" value="Domingo" id="sunday">
                                 <label class="form-check-label" for="sunday">Domingo</label>
                             </div>
                         </div>

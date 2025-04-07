@@ -134,30 +134,33 @@ class RestaurantController extends BaseController
         $user_id = session()->get('user_id'); 
 
 
-        $model = new CategoryModel();
+        $categoryModel = new CategoryModel();
+        $restaurantModel = new \App\Models\RestaurantModel();
 
+        $restaurant = $restaurantModel->where('user_id', $user_id)->first();
+
+        $restaurantId = $restaurant['id']; 
        
-        $categories = $model->select('restaurant_categories.*, restaurants.name AS restaurant_name')
-                            ->join('restaurants', 'restaurants.id = restaurant_categories.restaurant_id', 'inner')
-                            ->where('restaurant_categories.restaurant_id', $user_id) // Filter by restaurant_id
-                            ->orderBy('restaurant_categories.created_at', 'DESC');
+        // Obtener las categorías del restaurante
+        $categories = $categoryModel->select('restaurant_categories.*')
+        ->join('restaurants', 'restaurants.id = restaurant_categories.restaurant_id', 'inner')
+        ->where('restaurant_categories.restaurant_id', $restaurantId)
+        ->orderBy('restaurant_categories.created_at', 'DESC')
+        ->findAll(); // ¡Esto faltaba!
 
-        // Add schedules for each category
         $validCategories = [];
 
         foreach ($categories as $category) {
             if (is_array($category) && isset($category['id'])) {
-                $schedules = $model->getSchedules($category['id']);
+                $schedules = $categoryModel->getSchedules($category['id']); // Método que tú definiste
                 $category['schedules'] = empty($schedules) ? [] : $schedules;
                 $validCategories[] = $category;
             }
-            // If not valid, just skip
         }
 
         $data = [
-            'categories' => $validCategories
+        'categories' => $validCategories
         ];
-
 
         return view('dashboard/restaurants/category', $data);
     }
