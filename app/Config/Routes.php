@@ -36,6 +36,7 @@ $routes->group('api', ['filter' => 'authFilter'], function ($routes) {
     
     $routes->post('product/create', 'ProductsController::create');
     $routes->put('product/(:num)', 'ProductsController::update/$1');
+    $routes->post('products/update-status', 'ProductsController::updateStatus');
 
 
 

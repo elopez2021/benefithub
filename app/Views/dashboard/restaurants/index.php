@@ -81,7 +81,11 @@
                                             <div class="d-flex justify-content-between align-items-center mt-3">
                                                 <span class="fw-bold">RD$ <?= number_format($producto['price'], 2) ?></span>
                                                 <div class="form-check form-switch">
-                                                    <input class="form-check-input" type="checkbox" <?= $producto['active'] ? 'checked' : '' ?>>
+                                                <input class="form-check-input product-active-toggle"
+                                                    data-product-id="<?= esc($producto['id']) ?>"
+                                                    type="checkbox"
+                                                    <?= $producto['active'] ? 'checked' : '' ?>>
+
                                                 </div>
                                             </div>
                                         </div>
@@ -211,6 +215,47 @@
     </div>
 
     <script>
+
+        document.querySelectorAll('.product-active-toggle').forEach(toggle => {
+            toggle.addEventListener('change', function() {
+            const productId = this.dataset.productId;
+
+            const isActive = this.checked ? 1 : 0;
+            
+            // Add visual feedback
+            this.disabled = true;
+            const originalColor = this.parentElement.style.backgroundColor;
+            this.parentElement.style.backgroundColor = '#fff3cd'; // Yellow background
+
+            // Axios call
+            axios.post('/api/products/update-status', {
+                product_id: productId,
+                active: isActive
+            }, {
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => {
+                // Success - reset UI after delay
+                setTimeout(() => {
+                this.parentElement.style.backgroundColor = originalColor;
+                this.disabled = false;
+                }, 1000);
+                if(response.data.success == false) {
+                    alert('Error al actualizar el estado del producto');
+                }
+            })
+            .catch(error => {
+                // Error - revert checkbox and show message
+                this.checked = !this.checked;
+                this.disabled = false;
+                this.parentElement.style.backgroundColor = originalColor;
+                console.error(error);
+                alert('Error actualizando el estado: ' + error.response?.data?.message || 'Server error');
+            });
+            });
+        });
 
         document.getElementById('editarProductoModal').addEventListener('show.bs.modal', function(event) {
             const button = event.relatedTarget; // Button that triggered the modal

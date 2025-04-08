@@ -16,6 +16,31 @@ class ProductsController extends BaseController
         //
     }
 
+    // app/Controllers/Products.php
+    public function updateStatus()
+    {    
+        // Use getJSON(true) if JSON data is sent
+        $data = $this->request->getJSON(true);
+    
+        if (empty($data['product_id'])) {
+            return $this->response->setStatusCode(400)->setJSON([
+                'message' => 'Missing product ID',
+                'data' => $data
+            ]);
+        }
+    
+        $productModel = new ProductsModel();
+
+    
+        $updated = $productModel->update($data['product_id'], ['active' => $data['active']]);
+    
+        return $this->response->setJSON([
+            'success' => $updated,
+            'message' => $updated ? 'Status updated' : 'Update failed'
+        ]);
+    }
+    
+
     public function create() {
         try {
 
