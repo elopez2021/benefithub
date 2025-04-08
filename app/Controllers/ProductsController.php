@@ -65,5 +65,65 @@ class ProductsController extends BaseController
             ]);
         }
     }
+
+    public function update($id) {
+        try {
+    
+            $userId = session()->get('user_id');
+    
+            $restaurantModel = new RestaurantModel();
+            $productModel = new ProductsModel();
+            $productCategoryModel = new ProductCategoryModel();
+            
+            // Get the restaurant associated with the user
+            $restaurant = $restaurantModel
+            ->where('user_id', $userId)
+            ->first();
+    
+            // Fetch the current product data
+            $product = $productModel->find($id);
+            if (!$product) {
+                return $this->response->setStatusCode(404)->setJSON(['success' => false, 'errors' => 'Producto no encontrado']);
+            }
+    
+            // Get JSON data (this is the updated data for the product)
+            $productData = $this->request->getJSON();
+    
+            // Check if categories are provided
+            if ($productData->categories == null) {
+                return $this->response->setStatusCode(500)->setJSON(['success' => false, 'errors' => 'No se han seleccionado categorías']);
+            }
+    
+            // Update the product details
+            $productModel->update($id, [
+                'name' => $productData->name,
+                'descripcion' => $productData->descripcion,
+                'price' => $productData->price,
+                'restaurant_id' => $restaurant['id'],
+            ]);
+    
+            // Remove existing categories for the product (if needed)
+            $productCategoryModel->where('product_id', $id)->delete();
+    
+            // Save the updated categories
+            foreach ($productData->categories as $categoryId) {
+                $productCategoryModel->insert([
+                    'product_id' => $id,
+                    'category_id' => $categoryId
+                ]);
+            }
+    
+            // Return success response with updated product data
+            return $this->response->setJSON(['success' => true, 'data' => $productData]);    
+    
+        } catch (\Exception $e) {
+            // If there's an error, return a failure response with the error message
+            return $this->response->setStatusCode(500)->setJSON([
+                'success' => false,
+                'errors' => 'Error en la base de datos: ' . $e->getMessage()
+            ]);
+        }
+    }
+    
     
 }

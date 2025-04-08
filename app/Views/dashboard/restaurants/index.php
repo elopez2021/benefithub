@@ -68,9 +68,14 @@
                                             </div>
                                             <p class="text-muted small"><?= esc($producto['description']) ?></p>
                                             <div class="mb-3">
-                                                <?php if (!empty($producto['category_name'])): ?>
-                                                    <span class="badge bg-primary"><?= esc($producto['category_name']) ?></span>
-                                                <?php endif; ?>
+                                            <?php if (!empty($producto['category_names'])): ?>
+                                                <?php
+                                                $productCategories = explode(',', $producto['category_names']); // Changed variable name
+                                                foreach ($productCategories as $categoryName): ?>
+                                                    <span class="badge bg-primary"><?= esc($categoryName) ?></span>
+                                                <?php endforeach; ?>
+                                            <?php endif; ?>
+
                                             </div>
                                             
                                             <div class="d-flex justify-content-between align-items-center mt-3">
@@ -198,7 +203,7 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-primary">Guardar Producto</button>
+                        <button type="submit" class="btn btn-primary">Actualizar Producto</button>
                     </div>
                 </form>
             </div>
@@ -237,6 +242,54 @@
             const idInput = form.querySelector('[name="id"]');
             idInput.value = productId; // Fix: use productId instead of id
         });
+
+        function editarProductoSave(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            const form = document.getElementById('editformProducto');
+            const formData = new FormData(form);
+
+            // Get the selected categories
+            const selectedCategories = formData.getAll('categories[]');
+            if (selectedCategories.length === 0) {
+                alert('Por favor, selecciona al menos una categoría.');
+                return;
+            }
+
+            // Manually build the object with the updated data
+            const data = {
+                name: formData.get('name'),
+                descripcion: formData.get('descripcion'),
+                price: formData.get('price'),
+                categories: selectedCategories
+            };
+
+            const productId = formData.get('id'); // Get the product ID
+
+            // Send the data to the server using Axios (using PUT method)
+  
+            axios.put(`/api/product/${productId}`, data, {
+                headers: {
+                    'Content-Type': 'application/json', // Set the Content-Type to JSON
+                }
+            })
+            .then(response => {
+                // Handle the response from the server
+                if (response.data.success) {
+                    alert('Producto actualizado exitosamente');
+                    console.log(response.data.data);
+                    // Optionally, update UI with the new data or reload
+                    location.reload();  // You can refresh the page or update the list dynamically
+                } else {
+                    alert('Hubo un error al actualizar el producto');
+                    console.log(response.data);
+                }
+            })
+            .catch(error => {
+                console.error(error);
+                alert('Ocurrió un error al actualizar el producto. Por favor, inténtelo de nuevo.');
+            });
+        }
 
 
 
