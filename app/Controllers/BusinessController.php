@@ -10,12 +10,18 @@ class BusinessController extends BaseController
 {
     public function index()
     {
-        
-        $model = new BusinessModel();
-        
-        $data = $model->getAllBusinesses();
 
-        return view('dashboard/business/index', ['businesses' => $data]);
+        $employeeModel = new \App\Models\EmployeeModel();
+        $builder = $employeeModel->builder();
+        
+        // Join with users table to get username
+        $builder->select('employees.*, users.username')
+            ->join('users', 'users.id = employees.user_id', 'left');
+        
+        $data['employees'] = $builder->get()->getResultArray();
+        
+        return view('dashboard/business/index', $data);
+        
     }
 
     public function create()

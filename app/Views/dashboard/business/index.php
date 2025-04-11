@@ -25,62 +25,39 @@
                 <!-- Lista de Empleados -->
                 <div class="row g-4">
                     <!-- Empleado Ejemplo -->
+                    
+                    <?php foreach ($employees as $employee): ?>
                     <div class="col-md-4">
                         <div class="card employee-card h-100">
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <h5 class="card-title mb-0">Juan Pérez</h5>
+                                    <h5 class="card-title mb-0"><?= esc($employee['first_name'] . ' ' . $employee['last_name']) ?></h5>
                                     <div class="dropdown">
                                         <button class="btn btn-link" data-bs-toggle="dropdown">
                                             <i class="bi bi-three-dots-vertical"></i>
                                         </button>
                                         <ul class="dropdown-menu">
-                                            <li><a class="dropdown-item" href="#" onclick="editarEmpleado(1)">Editar</a></li>
-                                            <li><a class="dropdown-item text-danger" href="#" onclick="eliminarEmpleado(1)">Eliminar</a></li>
-                                            <li><a class="dropdown-item" href="#" onclick="verDetallesEmpleado(1)">Ver Detalles</a></li>
+                                            <li><a class="dropdown-item" href="#" onclick="editarEmpleado(<?= $employee['id'] ?>)">Editar</a></li>
+                                            <li><a class="dropdown-item text-danger" href="#" onclick="eliminarEmpleado(<?= $employee['id'] ?>)">Eliminar</a></li>
+                                            <li><a class="dropdown-item" href="#" onclick="verDetallesEmpleado(<?= $employee['id'] ?>)">Ver Detalles</a></li>
                                         </ul>
                                     </div>
                                 </div>
-                                <p class="text-muted small">Cédula: 001-1234567-8</p>
-                                <p class="text-muted small">Usuario: juan.perez</p>
+                                <p class="text-muted small">Cédula: <?= esc($employee['id_number']) ?></p>
+                                <p class="text-muted small">Usuario: <?= esc($employee['username'] ?? 'N/A') ?></p>
                                 <div class="mb-3">
-                                    <span class="badge bg-primary">Crédito Disponible: RD$ 500.00</span>
-                                </div>
-                                <div class="d-flex flex-wrap gap-2">
-                                    <span class="badge credit-badge">Consumido esta semana: RD$ 200.00</span>
+                                    <span class="badge bg-<?= $employee['active'] ? 'primary' : 'secondary' ?>">
+                                        <?= $employee['active'] ? 'Activo' : 'Inactivo' ?> | 
+                                        Crédito: RD$ <?= number_format($employee['subsidy_left_today'], 2) ?>
+                                    </span>
                                 </div>
                             </div>
                         </div>
                     </div>
+                    <?php endforeach; ?>
 
-                    <!-- Otro Empleado -->
-                    <div class="col-md-4">
-                        <div class="card employee-card h-100">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <h5 class="card-title mb-0">María López</h5>
-                                    <div class="dropdown">
-                                        <button class="btn btn-link" data-bs-toggle="dropdown">
-                                            <i class="bi bi-three-dots-vertical"></i>
-                                        </button>
-                                        <ul class="dropdown-menu">
-                                            <li><a class="dropdown-item" href="#" onclick="editarEmpleado(2)">Editar</a></li>
-                                            <li><a class="dropdown-item text-danger" href="#" onclick="eliminarEmpleado(2)">Eliminar</a></li>
-                                            <li><a class="dropdown-item" href="#" onclick="verDetallesEmpleado(2)">Ver Detalles</a></li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                <p class="text-muted small">Cédula: 002-7654321-9</p>
-                                <p class="text-muted small">Usuario: maria.lopez</p>
-                                <div class="mb-3">
-                                    <span class="badge bg-primary">Crédito Disponible: RD$ 300.00</span>
-                                </div>
-                                <div class="d-flex flex-wrap gap-2">
-                                    <span class="badge credit-badge">Consumido esta semana: RD$ 150.00</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                
+
                 </div>
             </div>
         </div>
