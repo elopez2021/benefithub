@@ -17,6 +17,7 @@ class EmployeeModel extends Model
         'first_name',
         'last_name',
         'id_number',
+        'subsidy_left_today',
         'active'
     ];
 
@@ -73,6 +74,13 @@ class EmployeeModel extends Model
             'rules' => 'permit_empty|in_list[0,1]',
             'errors' => [
                 'in_list' => 'El estado activo debe ser 0 o 1'
+            ]
+        ],
+        'subsidy_left_today' => [
+            'label' => 'Subsidio',
+            'rules' => 'permit_empty|decimal',
+            'errors' => [
+                'decimal' => 'El {field} debe ser un número decimal'
             ]
         ]
     ];

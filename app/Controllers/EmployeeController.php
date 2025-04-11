@@ -6,6 +6,7 @@ use App\Controllers\BaseController;
 use CodeIgniter\HTTP\ResponseInterface;
 use App\Models\EmployeeModel;
 use App\Models\RestaurantModel;
+use App\Models\BusinessModel;
 
 class EmployeeController extends BaseController
 {
@@ -19,6 +20,17 @@ class EmployeeController extends BaseController
         $model = new \App\Models\EmployeeModel();
         $request = service('request');
         $data = $request->getJSON(true);
+
+        $user_id = session()->get('user_id'); 
+
+
+        $businessModel = new BusinessModel();
+
+        $business = $businessModel->where('user_id', $user_id)->first();
+
+        $business_subsidy = $business['daily_subsidy'] ?? null;
+        
+        $data['subsidy_left_today'] = $business_subsidy;
 
         try{
             if ($model->insert($data)) {

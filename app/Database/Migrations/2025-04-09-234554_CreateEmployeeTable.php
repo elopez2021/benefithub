@@ -39,6 +39,12 @@ class CreateEmployeeTable extends Migration
                 'default' => true, 
                 'null' => true
             ],
+            'subsidy_left_today' => [
+                'type' => 'DECIMAL',
+                'constraint' => '10,2',
+                'default' => 0.00,
+                'null' => true
+            ],
             'created_at' => [
                 'type' => 'DATETIME',
                 'null' => true,
@@ -50,7 +56,7 @@ class CreateEmployeeTable extends Migration
         ]);
 
         $this->forge->addPrimaryKey('id');
-        $this->forge->addForeignKey('user_id', 'users', 'id', 'CASCADE', 'SET NULL');
+        $this->forge->addForeignKey('user_id', 'users', 'id', 'CASCADE', 'CASCADE');
         $this->forge->createTable('employees');
     }
     public function down()
