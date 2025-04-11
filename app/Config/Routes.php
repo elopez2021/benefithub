@@ -33,14 +33,11 @@ $routes->group('api', ['filter' => 'authFilter'], function ($routes) {
     
     $routes->post('category/create', 'CategoryController::create');
 
-    
     $routes->post('product/create', 'ProductsController::create');
     $routes->put('product/(:num)', 'ProductsController::update/$1');
     $routes->post('products/update-status', 'ProductsController::updateStatus');
 
-
-
-
+    $routes->post('employees/create', 'EmployeeController::create');
 });
 
 
@@ -55,6 +52,7 @@ $routes->group('restaurant', ['filter' => 'authFilter'], function ($routes) {
     $routes->get('dashboard', 'RestaurantController::index');
     $routes->get('products', 'RestaurantController::products');
     $routes->get('categories', 'RestaurantController::categories');
+    $routes->get('orders', 'RestaurantController::orders');
 });
 
 $routes->group('employee', ['filter' => 'authFilter'], function ($routes) {

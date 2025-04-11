@@ -25,12 +25,11 @@ class AuthController extends ResourceController
             ], 400);
         }
 
-        // Extract username and password from JSON
         $username = $json->username;
         $password = $json->password;
 
 
-        // Fetch user from the database
+
         $user = $model->getUserByUsername($username);
 
         // Validate credentials
@@ -41,7 +40,6 @@ class AuthController extends ResourceController
             ], 401);
         }
 
-        // Return success response
         
         session()->set('user_id', $user['id']);
         session()->set('role_id', $user['role_id']);
@@ -51,7 +49,7 @@ class AuthController extends ResourceController
         return $this->respond([
             'success' => true,
             'message' => 'Inicio de sesión exitoso',
-            'role_id' => $user['role_id'], // Send role_id to frontend for redirection (optional)
+            'role_id' => $user['role_id'], 
         ]);
     }
 
@@ -61,21 +59,21 @@ class AuthController extends ResourceController
             'user_id' => session()->get('user_id'),
             'role_id' => session()->get('role_id'),
             'username' => session()->get('username'),
-            'full_session' => session()->get() // Debugging full session data
+            'full_session' => session()->get()
         ]);
     }
 
 
     public function register()
     {
-        $data = $this->request->getJSON(true); // <-- Now available in both try and catch
+        $data = $this->request->getJSON(true);
         
         // Validate input
         if (!isset($data['username']) || !isset($data['password']) || !isset($data['role_id'])) {
             return $this->fail('Usuario, contraseña y rol son requeridos', 400);
         }
         
-        // Create user
+  
         $userModel = new UserModel();
         
         try {

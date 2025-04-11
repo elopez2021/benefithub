@@ -171,12 +171,10 @@
             data[key] = value;
         });
 
-        // Debugging: Log the data being sent
-        console.log('Data being sent:', data);
 
         axios.post('<?= route_to('login/submit'); ?>', data, {
             headers: {
-                'Content-Type': 'application/json', // Set the Content-Type to JSON
+                'Content-Type': 'application/json',
             }, withCredentials: true
             })        
             .then(response => {
@@ -201,34 +199,12 @@
                 
             })
             .catch(error => {
-                // Debugging: Log the error
+
                 console.error('Error:', error);
                 errorAlert.classList.remove('d-none'); // Show the alert
                 errorAlert.textContent = error.response.data.message;
 
-                /*
-
-                if (error.response) {
-                    // The request was made and the server responded with a status code
-                    console.error('Response data:', error.response.data);
-                    console.error('Response status:', error.response.status);
-                    console.error('Response headers:', error.response.headers);
-
-                    if (error.response.status === 400) {
-                        alert('Error 400: Solicitud incorrecta. Verifique los datos enviados.');
-                    } else if (error.response.status === 403) {
-                        alert('Error 403: Acceso prohibido. Verifique el token CSRF o la sesión.');
-                    }
-                } else if (error.request) {
-                    // The request was made but no response was received
-                    console.error('No response received:', error.request);
-                    alert('No se recibió respuesta del servidor.');
-                } else {
-                    // Something happened in setting up the request
-                    console.error('Request setup error:', error.message);
-                    alert('Error al configurar la solicitud.');
-                }
-                    */
+                
             })
             .finally(() => {
                 // Re-enable the button and hide the spinner

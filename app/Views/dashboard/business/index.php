@@ -98,23 +98,32 @@
                     <div class="modal-body">
                         <div class="mb-3">
                             <label class="form-label">Nombre</label>
-                            <input type="text" class="form-control" required>
+                            <input type="text" name="first_name" class="form-control" required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Apellido</label>
-                            <input type="text" class="form-control" required>
+                            <input type="text" name="last_name" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">ID Empleado</label>
+                            <input type="number" name="employee_id" class="form-control" required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Cédula de Identidad</label>
-                            <input type="text" class="form-control" required>
+                            <input type="text" 
+                            name="id_number" 
+                            class="form-control" 
+                            pattern="\d{11}" 
+                            title="La cédula debe tener exactamente 11 dígitos (sin espacios ni guiones)"
+                            required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Usuario</label>
-                            <input type="text" class="form-control" required>
+                            <input type="text" name="username" class="form-control" autocomplete="off" required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Contraseña</label>
-                            <input type="password" class="form-control" required>
+                            <input type="password" name="password" class="form-control" autocomplete="new-password" required>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -149,79 +158,88 @@
         </div>
     </div>
 
-    <script src="../../js/bootstrap.bundle.min.js"></script>
     <script>
-        // Datos de ejemplo (simulados)
-        const empleados = [
-            {
-                id: 1,
-                nombre: "Juan",
-                apellido: "Pérez",
-                cedula: "001-1234567-8",
-                usuario: "juan.perez",
-                creditoDisponible: 500,
-                consumidoSemana: 200
-            },
-            {
-                id: 2,
-                nombre: "María",
-                apellido: "López",
-                cedula: "002-7654321-9",
-                usuario: "maria.lopez",
-                creditoDisponible: 300,
-                consumidoSemana: 150
-            }
-        ];
+    async function guardarEmpleado(event) {
+        event.preventDefault();
+        
+        // Get form elements
+        const form = document.getElementById('formEmpleado');
+        if (!form) {
+            console.error('Form not found');
+            return;
+        }
+        
+        const submitBtn = form.querySelector('button[type="submit"]');
+        if (!submitBtn) {
+            console.error('Submit button not found');
+            return;
+        }
+        
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Guardando...';
+        
+        try {
+            // Get form values using name attributes (more reliable)
+            const formData = new FormData(form);
+            const username = form.querySelector('[name="username"]')?.value;
+            const password = form.querySelector('[name="password"]')?.value;
+            const first_name = form.querySelector('[name="first_name"]')?.value;
+            const last_name = form.querySelector('[name="last_name"]')?.value;
+            const employee_id = form.querySelector('[name="employee_id"]')?.value;
+            const id_number = form.querySelector('[name="id_number"]')?.value;
 
-        // Función para guardar nuevo empleado
-        async function guardarEmpleado(event) {
-            event.preventDefault();
-            const formData = new FormData(event.target);
+            // Validate required fields
+            if (!username || !password || !first_name || !last_name || !employee_id || !id_number) {
+                console.log('Validation failed:', { username, password, first_name, last_name, employee_id, id_number });
+                throw new Error('Todos los campos son obligatorios');
+                
+            }
+
+            // Prepare user data
+            const userData = {
+                username: username,
+                password: password,
+                role_id: 2
+            };
             
-            try {
-                const nuevoEmpleado = {
-                    id: empleados.length + 1,
-                    nombre: formData.get('nombre'),
-                    apellido: formData.get('apellido'),
-                    cedula: formData.get('cedula'),
-                    usuario: formData.get('usuario'),
-                    creditoDisponible: 1000, // Crédito máximo
-                    consumidoSemana: 0
+            // 1. First create the user
+            const userResponse = await axios.post('/api/user/register', userData);
+            console.log('User response:', userResponse);
+            
+            if (userResponse.data?.status === 'success') {    
+                const employeeData = {
+                    user_id: userResponse.data.user_id,
+                    first_name: first_name,
+                    last_name: last_name,
+                    employee_id: employee_id,
+                    id_number: id_number
                 };
-
-                empleados.push(nuevoEmpleado);
-                alert('Empleado añadido correctamente');
-                location.reload();
-
-            } catch (error) {
-                alert('Error: ' + error.message);
+                
+                const employeeResponse = await axios.post('/api/employees/create', employeeData, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    responseType: 'json' 
+                });
+                
+                
+                    alert('Empleado guardado satisfactoriamente');
+                    form.reset();
+                    location.reload();
+                
+            } else {
+                throw new Error(userResponse.data);
             }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Ocurrió un error: ' + (error.response?.data?.message || error.message));
+        } finally {
+            // Re-enable button
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Guardar Empleado';
         }
-
-        // Función para ver detalles del empleado
-        function verDetallesEmpleado(id) {
-            const empleado = empleados.find(e => e.id === id);
-            if (empleado) {
-                document.getElementById('detalleNombre').textContent = empleado.nombre;
-                document.getElementById('detalleApellido').textContent = empleado.apellido;
-                document.getElementById('detalleCedula').textContent = empleado.cedula;
-                document.getElementById('detalleUsuario').textContent = empleado.usuario;
-                document.getElementById('detalleCreditoDisponible').textContent = `RD$ ${empleado.creditoDisponible.toFixed(2)}`;
-                document.getElementById('detalleConsumidoSemana').textContent = `RD$ ${empleado.consumidoSemana.toFixed(2)}`;
-                new bootstrap.Modal(document.getElementById('detallesEmpleado')).show();
-            }
-        }
-
-        // Funciones para editar y eliminar (simuladas)
-        function editarEmpleado(id) {
-            alert(`Editar empleado con ID: ${id}`);
-        }
-
-        function eliminarEmpleado(id) {
-            if (confirm('¿Estás seguro de eliminar este empleado?')) {
-                alert(`Empleado con ID: ${id} eliminado`);
-            }
-        }
+    }
     </script>
+    
 </body>
 </html>

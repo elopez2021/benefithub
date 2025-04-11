@@ -205,4 +205,28 @@ class RestaurantController extends BaseController
                             ->orderBy('restaurant_categories.created_at', 'DESC');
         return view('dashboard/restaurants/schedule');
     }
+
+    public function orders()
+    {
+
+        /*
+        $user_id = session()->get('user_id'); 
+
+        $orderModel = new \App\Models\OrderModel();
+        $restaurantModel = new \App\Models\RestaurantModel();
+
+        $restaurant = $restaurantModel->where('user_id', $user_id)->first();
+
+        $restaurantId = $restaurant['id']; 
+       
+        // Obtener las categorías del restaurante
+        $orders = $orderModel->select('orders.*, restaurants.name AS restaurant_name')
+        ->join('restaurants', 'restaurants.id = orders.restaurant_id', 'inner')
+        ->where('orders.restaurant_id', $restaurantId)
+        ->orderBy('orders.created_at', 'DESC')
+        ->findAll();
+        */
+
+        return view('dashboard/restaurants/orders');
+    }
 }

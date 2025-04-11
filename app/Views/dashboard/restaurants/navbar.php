@@ -44,6 +44,10 @@
                 <a class="list-group-item list-group-item-action bg-transparent text-white border-0 <?= uri_string() === 'restaurant/categories' ? 'active' : ''; ?>" href="<?= base_url('restaurant/categories'); ?>">
                     <i class="bi bi-tags me-2"></i>Categorías
                 </a>
+
+                <a class="list-group-item list-group-item-action bg-transparent text-white border-0 <?= uri_string() === 'restaurant/orders' ? 'active' : ''; ?>" href="<?= base_url('restaurant/orders'); ?>">
+                    <i class="bi bi-card-checklist me-2"></i>Ordenes
+                </a>
             
                 <a class="list-group-item list-group-item-action bg-transparent text-white border-0" href="<?= site_url('logout'); ?>">
                     <i class="bi bi-box-arrow-left me-2"></i>Cerrar Sesión
