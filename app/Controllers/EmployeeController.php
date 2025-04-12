@@ -13,6 +13,7 @@ use App\Models\ProductCategoryModel;
 use App\Models\ScheduleModel;
 use App\Models\OrderModel;
 use App\Models\OrderItemModel;
+use App\Models\UserModel;
 
 class EmployeeController extends BaseController
 {
@@ -263,5 +264,108 @@ class EmployeeController extends BaseController
         }
     }
 
+
+    public function profile()
+    {
+        $userId = session()->get('user_id');
+        $username = session()->get('username');
+        $employeeModel = new EmployeeModel();
+        $employee = $employeeModel->where('user_id', $userId)->first();
+
+        return view('dashboard/employee/profile', [
+            'employee' => $employee,
+            'username' => $username
+        ]);
+    }
+
+    public function updateProfile()
+    {
+
+        $request = service('request');
+        $data = $request->getJSON(true);
+
+        try{
+            // Get the user ID from the session
+            $userId = session()->get('user_id');
+
+            // Load the Employee model and fetch the employee data by the user ID
+            $employeeModel = new EmployeeModel();
+            $employee = $employeeModel->where('user_id', $userId)->first();
+
+            // Check if the employee exists
+            if (!$employee) {
+                return $this->response->setStatusCode(ResponseInterface::HTTP_BAD_REQUEST)
+                    ->setJSON(['message' => 'Empleado no encontrado.']);
+            }
+
+               
+
+            // Ensure the username is part of the input data and exists in the users table
+            if (isset($data['username'])) {
+                // Validate if the username already exists in the 'users' table
+                $userModel = new UserModel();
+                $existingUser = $userModel->where('username', $data['username'])->first();
+
+                if ($existingUser && $existingUser['id'] != $employee['user_id']) {
+                    return $this->response->setStatusCode(ResponseInterface::HTTP_BAD_REQUEST)
+                        ->setJSON(['message' => 'El nombre de usuario ya está en uso.']);
+                }
+            }
+
+            // Update the employee information
+            if ($employeeModel->update($employee['id'], $data)) {
+                // If the employee data is updated successfully, update the username in the 'users' table as well
+                if (isset($data['username'])) {
+                    $userModel = new UserModel();
+                    $userData = [
+                        'username' => $data['username']
+                    ];
+                    $userModel->update($employee['user_id'], $userData);
+                }
+
+                return $this->response->setStatusCode(200)
+                    ->setJSON(['message' => 'Perfil actualizado con éxito.', 'status' => true]);
+            } else {
+                return $this->response->setStatusCode(ResponseInterface::HTTP_BAD_REQUEST)
+                    ->setJSON(['message' => 'Error al actualizar el perfil.', 'errors' => $employeeModel->errors()]);
+            }
+        } catch (\Exception $e) {
+            return $this->response->setStatusCode(ResponseInterface::HTTP_INTERNAL_SERVER_ERROR)
+                ->setJSON(['message' => 'Error interno del servidor.', 'error' => $e->getMessage(), 'data' => $data]);	
+        }
+        
+    }
+
+    public function changePassword()
+    {
+        $userId = session()->get('user_id');
+        $request = service('request');
+        $userModel = new UserModel(); // Assuming you have a UserModel for managing user data
+        $user = $userModel->find($userId);
+
+        if (!$user) {
+            return $this->response->setStatusCode(ResponseInterface::HTTP_BAD_REQUEST)
+                ->setJSON(['message' => 'Usuario no encontrado.']);
+        }
+
+        // Get the data from the request
+        $data = $request->getJSON(true);
+
+        // Validate the current password
+        if (!password_verify($data['current_password'], $user['password'])) {
+            return $this->response->setStatusCode(ResponseInterface::HTTP_UNAUTHORIZED)
+                ->setJSON(['message' => 'La contraseña actual es incorrecta.']);
+        }
+
+        
+        // Hash the new password
+        $newPasswordHash = password_hash($data['new_password'], PASSWORD_BCRYPT);
+
+        // Update the password in the database
+        $userModel->update($userId, ['password' => $newPasswordHash]);
+
+        return $this->response->setStatusCode(200)
+            ->setJSON(['message' => 'Contraseña cambiada con éxito.', 'status' => true]);
+    }
 
 }

@@ -38,6 +38,8 @@ $routes->group('api', ['filter' => 'authFilter'], function ($routes) {
     $routes->post('products/update-status', 'ProductsController::updateStatus');
 
     $routes->post('employees/create', 'EmployeeController::create');
+    $routes->put('employee/profile/update', 'EmployeeController::updateProfile');
+    $routes->put('employee/profile/change-password', 'EmployeeController::changePassword');
 
     $routes->post('orders/create', 'EmployeeController::place_order');
 });
@@ -62,6 +64,7 @@ $routes->group('restaurant', ['filter' => 'authFilter'], function ($routes) {
 $routes->group('employee', ['filter' => 'authFilter'], function ($routes) {
     $routes->get('dashboard', 'EmployeeController::index');
     $routes->get('restaurant/menu/(:num)', 'EmployeeController::showMenu/$1');
+    $routes->get('profile', 'EmployeeController::profile');
 });
 $routes->group('business', ['filter' => 'authFilter'], function ($routes) {
     $routes->get('dashboard', 'BusinessController::index');

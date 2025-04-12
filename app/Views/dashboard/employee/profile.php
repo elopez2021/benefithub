@@ -48,20 +48,31 @@
                         <i class="bi bi-person-badge me-2"></i>Información Personal
                     </h4>
                     
-                    <form>
-                        <div class="mb-3">
-                            <label class="form-label">Nombre completo</label>
-                            <input type="text" 
-                                   class="form-control" 
-                                   value="Juan Pérez" 
-                                   required>
-                        </div>
+                    <form id="update-profile-form">
+
+                        
                         
                         <div class="mb-3">
-                            <label class="form-label">Correo electrónico</label>
-                            <input type="email" 
+                            <label class="form-label">Primer Nombre</label>
+                            <input type="text" name="first_name"
                                    class="form-control" 
-                                   value="juan.perez@empresa.com" 
+                                   value="<?= $employee['first_name'] ?>" 
+                                   required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Apellido</label>
+                            <input type="text" name="last_name"
+                                   class="form-control" 
+                                   value="<?= $employee['last_name'] ?>" 
+                                   required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Usuario</label>
+                            <input type="text" name="username"
+                                   class="form-control" 
+                                   value="<?= $username ?>" 
                                    required>
                         </div>
                         
@@ -77,10 +88,11 @@
                         <i class="bi bi-shield-lock me-2"></i>Seguridad
                     </h4>
                     
-                    <form>
+                    <form id="change-password-form">
                         <div class="mb-3">
                             <label class="form-label">Contraseña actual</label>
-                            <input type="password" 
+                            <input type="password" name="current_password"
+                            id="current_password"
                                    class="form-control" 
                                    placeholder="••••••••" 
                                    required>
@@ -88,17 +100,19 @@
                         
                         <div class="mb-3">
                             <label class="form-label">Nueva contraseña</label>
-                            <input type="password" 
+                            <input type="password" name="new_password"
+                            id="new_password"
                                    class="form-control" 
                                    placeholder="••••••••" 
-                                   minlength="8"
+                                   
                                    required>
-                            <small class="form-text text-muted">Mínimo 8 caracteres</small>
+                            
                         </div>
                         
                         <div class="mb-3">
                             <label class="form-label">Confirmar nueva contraseña</label>
-                            <input type="password" 
+                            <input type="password" name="confirm_new_password"
+                                id ="confirm_new_password"
                                    class="form-control" 
                                    placeholder="••••••••" 
                                    required>
@@ -110,23 +124,69 @@
                     </form>
                 </div>
 
-                <!-- Sección Eliminar Cuenta -->
-                <div class="profile-section border border-danger">
-                    <h4 class="text-danger mb-4">
-                        <i class="bi bi-exclamation-triangle me-2"></i>Zona Peligrosa
-                    </h4>
-                    
-                    <div class="alert alert-danger">
-                        <h5>Eliminar cuenta permanentemente</h5>
-                        <p class="mb-2">Esta acción no se puede deshacer. Todos tus datos serán eliminados.</p>
-                        <button class="btn btn-outline-danger">
-                            <i class="bi bi-trash3 me-2"></i>Eliminar mi cuenta
-                        </button>
-                    </div>
-                </div>
+                
             </div>
         </div>
     </div>
+
+    <script>
+        document.getElementById('update-profile-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+
+            
+
+            // Send AJAX request (using axios)
+            axios.put('/api/employee/profile/update', formData, {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+                })
+                .then(response => {
+                    alert('Información actualizada con éxito');
+                })
+                .catch(error => {
+                    console.error('Error updating profile:', error);
+                    alert(error.response.data.message);
+    
+                });
+        });
+
+        document.getElementById('change-password-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const currentPassword = document.getElementById('current_password').value;
+            const newPassword = document.getElementById('new_password').value;
+            const confirmNewPassword = document.getElementById('confirm_new_password').value;
+
+            // Password validation
+            if (newPassword !== confirmNewPassword) {
+                alert('Las contraseñas no coinciden');
+                return;
+            }
+
+            const data = {
+                current_password: currentPassword,
+                new_password: newPassword,
+            };
+
+            // Send AJAX request (using axios)
+            axios.put('/api/employee/profile/change-password', data, {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+                })
+                .then(response => {
+                    alert('Contraseña cambiada con éxito');
+                })
+                .catch(error => {
+                    console.error('Error changing password:', error);
+                    alert(error.response.data.message);
+                });
+        });
+
+    </script>
 
 </body>
 </html>
