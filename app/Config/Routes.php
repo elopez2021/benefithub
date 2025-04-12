@@ -53,10 +53,13 @@ $routes->group('restaurant', ['filter' => 'authFilter'], function ($routes) {
     $routes->get('products', 'RestaurantController::products');
     $routes->get('categories', 'RestaurantController::categories');
     $routes->get('orders', 'RestaurantController::orders');
+
+    
 });
 
 $routes->group('employee', ['filter' => 'authFilter'], function ($routes) {
     $routes->get('dashboard', 'EmployeeController::index');
+    $routes->get('restaurant/menu/(:num)', 'EmployeeController::showMenu/$1');
 });
 $routes->group('business', ['filter' => 'authFilter'], function ($routes) {
     $routes->get('dashboard', 'BusinessController::index');

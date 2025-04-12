@@ -206,6 +206,7 @@ class RestaurantController extends BaseController
         return view('dashboard/restaurants/schedule');
     }
 
+
     public function orders()
     {
 
