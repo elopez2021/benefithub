@@ -227,6 +227,8 @@
                     No hay items en tu pedido
                 </div>
             `;
+            document.getElementById('cartTotal').textContent = `RD$ 0.00`;
+            document.getElementById('subtotal').textContent = `RD$ 0.00`;
         } else {
             let itemsHTML = '';
             let subtotal = 0;
@@ -258,8 +260,11 @@
                 `;
             }
             
+
+
             const subsidy = parseFloat(document.getElementById('subsidy').textContent.replace(/[^0-9.]/g, ''));
-            const total = Math.abs(subtotal - subsidy);
+            const total = Math.max(subtotal - subsidy, 0);
+
             
             cartItemsContainer.innerHTML = itemsHTML;
             document.getElementById('subtotal').textContent = `RD$ ${subtotal.toFixed(2)}`;
@@ -293,7 +298,7 @@
                     delete cart[productId];
                     saveCart();
                     updateCartDisplay();
-                    location.reload();
+                    //location.reload();
                 });
             });
         }
@@ -305,17 +310,32 @@
             alert('Tu carrito está vacío');
             return;
         }
-        
-        axios.post('/api/orders/create', {
+
+   
+        if (!confirm('¿Estás seguro de que deseas realizar el pedido?')) {
+            return;
+        }
+
+        const data = {
             restaurant_id: <?= $restaurant['id'] ?>,
             employee_id: <?= $employee['id'] ?? 0 ?>,
             items: cart,
-            total: document.getElementById('cartTotal').textContent.replace(/[^0-9.]/g, '')
+            subtotal: parseFloat(document.getElementById('subtotal').textContent.replace(/[^0-9.]/g, '')),
+            total: parseFloat(document.getElementById('cartTotal').textContent.replace(/[^0-9.]/g, ''))
+        };      
+        
+        console.log('Order data:', data);
+
+        axios.post('/api/orders/create', data, {
+            headers: {
+                'Content-Type': 'application/json'
+            }
         })
         .then(response => {
             alert('Pedido realizado con éxito!');
             localStorage.removeItem('cart');
             cart = {};
+            location.reload();
             updateCartDisplay();
         })
         .catch(error => {

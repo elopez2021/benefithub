@@ -38,6 +38,8 @@ $routes->group('api', ['filter' => 'authFilter'], function ($routes) {
     $routes->post('products/update-status', 'ProductsController::updateStatus');
 
     $routes->post('employees/create', 'EmployeeController::create');
+
+    $routes->post('orders/create', 'EmployeeController::place_order');
 });
 
 

@@ -58,7 +58,7 @@
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="<?= base_url('employee/profile'); ?>">Perfil</a></li>
                             <!-- Logout (Cerrar Sesión) -->
-                            <li><a class="dropdown-item" href="<?= base_url('logout'); ?>">Cerrar Sesión</a></li>
+                            <li><a class="dropdown-item" href="<?= base_url('logout'); ?>"  onclick="clearCart()">Cerrar Sesión</a></li>
                         </ul>
                     </li>
                 </ul>
@@ -70,3 +70,11 @@
 
     <script src="<?= base_url('assets/js/bootstrap.bundle.min.js'); ?>""></script>
     <script src="<?= base_url('assets/js/axios.min.js') ; ?> "></script>
+
+<script>
+    function clearCart() {
+        if (localStorage.getItem('cart')) {
+            localStorage.removeItem('cart');
+        }
+    }
+</script>

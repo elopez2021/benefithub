@@ -11,6 +11,8 @@ use App\Models\ProductsModel;
 use App\Models\CategoryModel;
 use App\Models\ProductCategoryModel;
 use App\Models\ScheduleModel;
+use App\Models\OrderModel;
+use App\Models\OrderItemModel;
 
 class EmployeeController extends BaseController
 {
@@ -34,16 +36,25 @@ class EmployeeController extends BaseController
     public function showMenu($restaurantId)
     {
 
-        $userId = session()->get('user_id');
+        $userId = session()->get('user_id'); 
         $employeeModel = new EmployeeModel();
         $employee = $employeeModel->where('user_id', $userId)->first();
 
         // Set Santo Domingo timezone
         date_default_timezone_set('America/Santo_Domingo');
-        
+
         // Get current time and day
         $currentTime = date('H:i:s');
-        $currentDay = strtolower(date('l')); // e.g. 'monday'
+        $currentDay = strtolower(date('l'));
+        $currentDay = match ($currentDay) {
+            'monday' => 'lunes',
+            'tuesday' => 'martes',
+            'wednesday' => 'miércoles',
+            'thursday' => 'jueves',
+            'friday' => 'viernes',
+            'saturday' => 'sábado',
+            'sunday' => 'domingo',
+        };
 
         // Load models
         $restaurantModel = new RestaurantModel();
@@ -68,11 +79,14 @@ class EmployeeController extends BaseController
         $availableCategoryIds = array_column($availableSchedules, 'category_id');
         $categorySchedules = array_column($availableSchedules, null, 'category_id');
 
-        // Get available categories
-        $categories = $categoryModel
-            ->where('restaurant_id', $restaurantId)
-            ->whereIn('id', $availableCategoryIds)
-            ->findAll();
+        // Get available categories (only if there are valid category IDs)
+        $categories = [];
+        if (!empty($availableCategoryIds)) {
+            $categories = $categoryModel
+                ->where('restaurant_id', $restaurantId)
+                ->whereIn('id', $availableCategoryIds)
+                ->findAll();
+        }
 
         // Get all active products for this restaurant
         $products = $productModel
@@ -83,12 +97,16 @@ class EmployeeController extends BaseController
         // Prepare products with their available categories
         $productsWithCategories = [];
         foreach ($products as $product) {
-            $productCategories = $productCategoryModel
-                ->select('restaurant_categories.*')
-                ->join('restaurant_categories', 'restaurant_categories.id = product_category.category_id')
-                ->where('product_category.product_id', $product['id'])
-                ->whereIn('restaurant_categories.id', $availableCategoryIds)
-                ->findAll();
+            $productCategories = [];
+
+            if (!empty($availableCategoryIds)) {
+                $productCategories = $productCategoryModel
+                    ->select('restaurant_categories.*')
+                    ->join('restaurant_categories', 'restaurant_categories.id = product_category.category_id')
+                    ->where('product_category.product_id', $product['id'])
+                    ->whereIn('restaurant_categories.id', $availableCategoryIds)
+                    ->findAll();
+            }
 
             if (!empty($productCategories)) {
                 $productsWithCategories[] = [
@@ -118,6 +136,7 @@ class EmployeeController extends BaseController
             'currentDay' => $currentDay,
             'restaurantId' => $restaurantId
         ]);
+
     }
         
     public function create()
@@ -145,8 +164,104 @@ class EmployeeController extends BaseController
             }
         } catch (\Exception $e) {
             return $this->response->setStatusCode(ResponseInterface::HTTP_INTERNAL_SERVER_ERROR)->setJSON(['message' => 'Error interno del servidor.', 'error' => $e->getMessage(), 'data' => $data]);
+        }        
+    }
+
+
+
+
+    public function place_order()
+    {
+        $request = service('request');
+        $data = $request->getJSON(true);
+
+        $userId = session()->get('user_id'); 
+        $employeeModel = new EmployeeModel();
+        $employee = $employeeModel->where('user_id', $userId)->first();
+
+        if (!$employee) {
+            return $this->response->setStatusCode(ResponseInterface::HTTP_BAD_REQUEST)
+                ->setJSON(['message' => 'Empleado no encontrado.']);
         }
 
         
+
+        $orderModel = new OrderModel();
+        $orderDetailModel = new OrderItemModel();
+        $productModel = new ProductsModel();
+
+        $db = \Config\Database::connect();
+        $db->transBegin();
+
+        try {
+            
+            $orderData = [
+                'employee_id'   => $employee['id'],
+                'restaurant_id' => $data['restaurant_id'],
+                'subtotal'      => 0, // Se calcula abajo
+                'total'         => $data['total'],
+                'status'        => 'pending',
+            ];
+
+
+            $orderModel->insert($orderData);
+            $orderId = $orderModel->getInsertID();
+
+            $subtotal = 0;
+            
+
+            foreach ($data['items'] as $productId => $item) {
+                $product = $productModel->find($productId);
+            
+                if (!$product) {
+                    throw new \Exception("Producto con ID {$productId} no encontrado.");
+                }
+            
+                $price = $product['price'];
+                $qty = $item['quantity'];
+                $itemSubtotal = $price * $qty;
+                $subtotal += $itemSubtotal;
+            
+                $orderDetailModel->insert([
+                    'order_id'   => $orderId,
+                    'product_id' => $productId,
+                    'quantity'   => $qty,
+                    'price'      => $price,
+                    'subtotal'   => $itemSubtotal
+                ]);
+            }
+            
+
+         
+            $orderModel->update($orderId, ['subtotal' => $subtotal]);
+
+            if ($db->transStatus() === false) {
+                $db->transRollback();
+                return $this->response->setStatusCode(ResponseInterface::HTTP_INTERNAL_SERVER_ERROR)
+                    ->setJSON(['message' => 'Error al procesar la transacción.']);
+            }
+
+            // Actualizar el subsidio del empleado
+            $employeeModel->update($employee['id'], [
+                'subsidy_left_today' => max($employee['subsidy_left_today'] - $data['subtotal'], 0)
+            ]);
+
+
+
+            
+            $db->transCommit();
+            return $this->response->setStatusCode(200)
+                ->setJSON(['message' => 'Orden creada con éxito.', 'status' => true]);
+
+        } catch (\Exception $e) {
+            $db->transRollback();
+            return $this->response->setStatusCode(ResponseInterface::HTTP_INTERNAL_SERVER_ERROR)
+                ->setJSON([
+                    'message' => 'Error interno del servidor.',
+                    'error' => $e->getMessage()
+                ]);
+        }
     }
+
+
 }
