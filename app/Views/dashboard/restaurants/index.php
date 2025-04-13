@@ -373,7 +373,7 @@
                         console.log(response.data.data);
                         // Optionally, reset the form or update UI after saving
                         document.getElementById('formProducto').reset();
-                        //location.reload();
+                        location.reload();
                     } else {
                         alert('Hubo un error al guardar el producto');
                         console.log(response.data);
