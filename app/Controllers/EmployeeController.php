@@ -201,7 +201,7 @@ class EmployeeController extends BaseController
                 'restaurant_id' => $data['restaurant_id'],
                 'subtotal'      => 0, // Se calcula abajo
                 'total'         => $data['total'],
-                'status'        => 'pending',
+                'status'        => 'processing',
             ];
 
 
@@ -366,6 +366,45 @@ class EmployeeController extends BaseController
 
         return $this->response->setStatusCode(200)
             ->setJSON(['message' => 'Contraseña cambiada con éxito.', 'status' => true]);
+    }
+
+    public function orders()
+    {
+        $userId = session()->get('user_id');
+        $employeeModel = new EmployeeModel();
+        $employee = $employeeModel->where('user_id', $userId)->first();
+
+        if (!$employee) {
+            return redirect()->back()->with('error', 'Empleado no encontrado');
+        }
+
+        $orderModel = new OrderModel();
+        $orderItemModel = new OrderItemModel();
+        $restaurantModel = new RestaurantModel();
+
+        
+        $orders = $orderModel->select('orders.*, restaurants.commercial_name as restaurant_name')
+                            ->join('restaurants', 'restaurants.id = orders.restaurant_id')
+                            ->where('employee_id', $employee['id'])
+                            ->orderBy('created_at', 'DESC')
+                            ->findAll();
+
+        
+                            
+        foreach ($orders as &$order) {
+            $order['items'] = $orderItemModel->select('order_items.*, products.name as product_name')
+                                        ->join('products', 'products.id = order_items.product_id')
+                                        ->where('order_id', $order['id'])
+                                        ->findAll();
+            
+          
+            $order['formatted_date'] = date('d/m/Y', strtotime($order['created_at']));
+            $order['formatted_time'] = date('h:i A', strtotime($order['created_at']));
+        }
+
+        return view('dashboard/employee/orders', [
+            'orders' => $orders
+        ]);
     }
 
 }

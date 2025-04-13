@@ -1,3 +1,12 @@
+<?php
+$statusTranslations = [
+    'pending'    => 'Pendiente',
+    'processing' => 'En proceso',
+    'completed'  => 'Completado',
+    'cancelled'  => 'Cancelado'
+];
+?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -40,113 +49,121 @@
     </style>
 </head>
 <body>
-     <!-- Menú Principal (Igual que antes) -->
+
 
      <?php include 'navbar.php'; ?>
     <!-- Contenido Principal -->
     <div class="container my-5">
         <div class="row">
             <div class="col-lg-10 mx-auto">
-                <!-- Encabezado -->
+                <!-- Header -->
                 <div class="text-center mb-5">
                     <h2 class="fw-bold">Mis Pedidos</h2>
                     <p class="text-muted">Revisa el historial de tus pedidos realizados con tus beneficios</p>
                 </div>
 
-                <!-- Filtros -->
+                <!-- Filters -->
                 <div class="d-flex justify-content-between mb-4">
                     <div>
-                        <select class="form-select">
-                            <option>Todos los estados</option>
-                            <option>Completados</option>
-                            <option>En proceso</option>
-                            <option>Cancelados</option>
+                        <select class="form-select" id="statusFilter">
+                            <option value="">Todos los estados</option>
+                            <option value="pending">Pendiente</option>
+                            <option value="processing">En proceso</option>
+                            <option value="completed">Completado</option>
+                            <option value="cancelled">Cancelado</option>
                         </select>
                     </div>
                     <div>
-                        <input type="date" class="form-control">
+                        <input type="date" class="form-control" id="dateFilter">
                     </div>
                 </div>
 
-                <!-- Lista de Pedidos -->
-                <div class="list-group">
-                    <!-- Pedido 1 -->
-                    <div class="list-group-item order-card mb-3">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h5 class="mb-1">La Cantina Mexicana</h5>
-                                <small class="text-muted">15/02/2024 - 12:30 PM</small>
-                            </div>
-                            <div>
-                                <span class="status-badge completed">Completado</span>
-                            </div>
+                <!-- Orders List -->
+                <div class="list-group" id="ordersList">
+                    <?php if (empty($orders)): ?>
+                        <div class="alert alert-info">
+                            No has realizado ningún pedido aún.
                         </div>
-                        <div class="mt-3">
-                            <p class="mb-1">2x Tacos al Pastor - $150.00</p>
-                            <p class="mb-1">1x Guacamole - $90.00</p>
-                            <p class="mb-1">Total: $240.00 MXN</p>
-                        </div>
-                    </div>
-
-                    <!-- Pedido 2 -->
-                    <div class="list-group-item order-card mb-3">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h5 class="mb-1">Pizzas Italianas</h5>
-                                <small class="text-muted">14/02/2024 - 7:45 PM</small>
+                    <?php else: ?>
+                        <?php foreach ($orders as $order): ?>
+                            <div class="list-group-item order-card mb-3" 
+                                data-status="<?= strtolower($order['status']) ?>"
+                                
+                                data-date="<?= date('Y-m-d', strtotime($order['created_at'])) ?>">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h5 class="mb-1"><?= esc($order['restaurant_name']) ?></h5>
+                                        <small class="text-muted">
+                                            <?= $order['formatted_date'] ?> - <?= $order['formatted_time'] ?>
+                                        </small>
+                                    </div>
+                                    <div>
+                                        <span class="badge 
+                                            <?= $order['status'] === 'completed' ? 'bg-success' : '' ?>
+                                            <?= $order['status'] === 'pending' ? 'bg-warning text-dark' : '' ?>
+                                            <?= $order['status'] === 'processing' ? 'bg-warning text-dark' : '' ?>
+                                            <?= $order['status'] === 'cancelled' ? 'bg-danger' : '' ?>">
+                                            <?= $statusTranslations[$order['status']] ?? ucfirst($order['status']) ?>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="mt-3">
+                                    <?php foreach ($order['items'] as $item): ?>
+                                        <p class="mb-1">
+                                            <?= $item['quantity'] ?>x <?= esc($item['product_name']) ?> - 
+                                            RD$ <?= number_format($item['price'], 2) ?>
+                                        </p>
+                                    <?php endforeach; ?>
+                                    <div class="mt-2 pt-2 border-top">
+                                        <p class="mb-1 fw-bold">Subtotal: RD$ <?= number_format($order['subtotal'], 2) ?></p>
+                                        <p class="mb-1 fw-bold">Total: RD$ <?= number_format($order['total'], 2) ?></p>
+                                    </div>
+                                </div>
                             </div>
-                            <div>
-                                <span class="status-badge in-progress">En proceso</span>
-                            </div>
-                        </div>
-                        <div class="mt-3">
-                            <p class="mb-1">1x Pizza Margarita - $180.00</p>
-                            <p class="mb-1">1x Refresco - $30.00</p>
-                            <p class="mb-1">Total: $210.00 MXN</p>
-                        </div>
-                    </div>
-
-                    <!-- Pedido 3 -->
-                    <div class="list-group-item order-card mb-3">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h5 class="mb-1">Sushi Express</h5>
-                                <small class="text-muted">10/02/2024 - 1:15 PM</small>
-                            </div>
-                            <div>
-                                <span class="status-badge cancelled">Cancelado</span>
-                            </div>
-                        </div>
-                        <div class="mt-3">
-                            <p class="mb-1">1x Sushi Variado - $200.00</p>
-                            <p class="mb-1">1x Té Verde - $25.00</p>
-                            <p class="mb-1">Total: $225.00 MXN</p>
-                        </div>
-                    </div>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
                 </div>
 
-                <!-- Paginación -->
-                <nav class="mt-5">
-                    <ul class="pagination justify-content-center">
-                        <li class="page-item disabled">
-                            <a class="page-link" href="#">Anterior</a>
-                        </li>
-                        <li class="page-item active">
-                            <a class="page-link" href="#">1</a>
-                        </li>
-                        <li class="page-item">
-                            <a class="page-link" href="#">2</a>
-                        </li>
-                        <li class="page-item">
-                            <a class="page-link" href="#">3</a>
-                        </li>
-                        <li class="page-item">
-                            <a class="page-link" href="#">Siguiente</a>
-                        </li>
-                    </ul>
-                </nav>
+                <!-- Pagination would go here -->
             </div>
         </div>
     </div>
+
+    <style>
+        .order-card {
+            border-radius: 8px;
+            border-left: 4px solid #0d6efd;
+            transition: all 0.3s ease;
+        }
+        .order-card:hover {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+    </style>
+
+    <script>
+    // Filter orders by status and date
+    document.getElementById('statusFilter').addEventListener('change', filterOrders);
+    document.getElementById('dateFilter').addEventListener('change', filterOrders);
+
+    function filterOrders() {
+        const statusFilter = document.getElementById('statusFilter').value;
+        const dateFilter = document.getElementById('dateFilter').value;
+        const orderCards = document.querySelectorAll('.order-card');
+        
+        orderCards.forEach(card => {
+            const cardStatus = card.getAttribute('data-status');
+            const cardDate = card.getAttribute('data-date');
+            
+            const statusMatch = !statusFilter || cardStatus === statusFilter;
+            const dateMatch = !dateFilter || cardDate === dateFilter;
+            
+            if (statusMatch && dateMatch) {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    }
+    </script>
 </body>
 </html>

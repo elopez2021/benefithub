@@ -65,6 +65,7 @@ $routes->group('employee', ['filter' => 'authFilter'], function ($routes) {
     $routes->get('dashboard', 'EmployeeController::index');
     $routes->get('restaurant/menu/(:num)', 'EmployeeController::showMenu/$1');
     $routes->get('profile', 'EmployeeController::profile');
+    $routes->get('orders', 'EmployeeController::orders');
 });
 $routes->group('business', ['filter' => 'authFilter'], function ($routes) {
     $routes->get('dashboard', 'BusinessController::index');
