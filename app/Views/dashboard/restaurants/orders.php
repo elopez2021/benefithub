@@ -130,7 +130,8 @@
                                                     data-customer-name="<?= esc($order['employee_name'] ?? 'N/A'); ?>" 
                                                     data-order-date="<?= $order['created_at']; ?>" 
                                                     data-order-status="<?= $order['status']; ?>" 
-                                                    data-order-total="<?= $order['total']; ?>" 
+                                                    data-order-total="<?= $order['total']; ?>"
+                                                    data-business-name="<?= $order['business_name']; ?>"
                                                     data-products="<?= htmlspecialchars(json_encode($order['items']), ENT_QUOTES, 'UTF-8'); ?>">
                                                         <i class="bi bi-eye me-2"></i>Ver detalle
                                                     </button>
@@ -200,7 +201,7 @@
                             </li>
                             <li class="list-group-item d-flex justify-content-between">
                                 <span class="text-muted">Empresa:</span>
-                                <span id="customer-phone"></span>
+                                <span id="business-name"></span>
                             </li>
                         </ul>
                     </div>
@@ -264,6 +265,7 @@
             var orderStatus = button.getAttribute('data-order-status');
             var orderTotal = button.getAttribute('data-order-total');
             var productsJson = button.getAttribute('data-products');
+            var businessName = button.getAttribute('data-business-name');
             
             // Safely parse JSON
             var products = [];
@@ -325,6 +327,7 @@
             // Update totals
             document.getElementById('order-subtotal').textContent = 'RD$ ' + subtotal.toFixed(2);
             document.getElementById('order-total').textContent = 'RD$ ' + parseFloat(orderTotal).toFixed(2);
+            document.getElementById('business-name').textContent = businessName;
             
         } catch (error) {
             console.error('Error showing order details:', error);

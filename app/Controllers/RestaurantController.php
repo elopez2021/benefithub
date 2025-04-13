@@ -218,12 +218,18 @@ class RestaurantController extends BaseController
         $restaurantId = $restaurant['id']; 
     
         $orders = $orderModel
-            ->select('orders.*, restaurants.commercial_name AS restaurant_name, CONCAT(employees.first_name, " ", employees.last_name) AS employee_name')
+            ->select('orders.*, 
+                    restaurants.commercial_name AS restaurant_name, 
+                    CONCAT(employees.first_name, " ", employees.last_name) AS employee_name, 
+                    employees.business_id AS employee_business_id,
+                    businesses.legal_name AS business_name')
             ->join('restaurants', 'restaurants.id = orders.restaurant_id', 'inner')
             ->join('employees', 'employees.id = orders.employee_id', 'left')
+            ->join('businesses', 'businesses.id = employees.business_id', 'left')
             ->where('orders.restaurant_id', $restaurantId)
             ->orderBy('orders.created_at', 'DESC')
             ->findAll();
+
     
         foreach ($orders as &$order) {
             $order['items'] = $orderItemModel->where('order_id', $order['id'])->findAll();

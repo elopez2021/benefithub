@@ -202,7 +202,7 @@ class EmployeeController extends BaseController
                 'restaurant_id' => $data['restaurant_id'],
                 'subtotal'      => 0, // Se calcula abajo
                 'total'         => $data['total'],
-                'status'        => 'processing',
+                'status'        => 'pending',
             ];
 
 
