@@ -171,5 +171,15 @@ class BusinessController extends BaseController
         $businessModel->updateBusinessStatus($id, $status);
         return redirect()->to('/business');
     }
+
+    
+    public function reports()
+    {
+        return view('dashboard/business/report');
+    }
+    public function credits()
+    {
+        return view('dashboard/business/credits');
+    }
     
 }

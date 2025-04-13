@@ -4,6 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ordenes</title>
+
+    <style>
+    .avatar-sm {
+        width: 32px;
+        height: 32px;
+    }
+    .table-hover tbody tr:hover {
+        background-color: rgba(0, 0, 0, 0.02);
+    }
+    .badge {
+        font-weight: 500;
+    }
+</style>
 </head>
 <body>
 <div class="wrapper d-flex">
@@ -42,13 +55,14 @@
             <!-- Tabla de Pedidos -->
             <div class="card border-0 shadow-sm">
                 <div class="card-body p-0">
-                    <div class="table-responsive">
+                    <div class="table">
                         <table class="table table-hover mb-0">
                             <thead class="table-light">
                                 <tr>
                                     <th width="120">N° Pedido</th>
-                                    <th>Cliente</th>
+                                    <th>Empleado</th>
                                     <th>Productos</th>
+                                    <th width="120">SubTotal</th>
                                     <th width="120">Total</th>
                                     <th width="150">Estado</th>
                                     <th width="150">Fecha</th>
@@ -56,120 +70,93 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <!-- Ejemplo de fila de pedido -->
-                                <tr>
-                                    <td class="fw-bold">#1001</td>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <div class="flex-shrink-0 me-2">
-                                                <div class="avatar-sm bg-light rounded-circle d-flex align-items-center justify-content-center">
-                                                    <i class="bi bi-person-fill text-muted"></i>
+                                <?php foreach ($orders as $order): ?>
+                                    <tr>
+                                        <td class="fw-bold">#<?= $order['id'] ?></td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="flex-shrink-0 me-2">
+                                                    <div class="avatar-sm bg-light rounded-circle d-flex align-items-center justify-content-center">
+                                                        <i class="bi bi-person-fill text-muted"></i>
+                                                    </div>
+                                                </div>
+                                                <div class="flex-grow-1">
+                                                    <h6 class="mb-0"><?= esc($order['employee_name'] ?? 'N/A') ?></h6>
+                                                    <small class="text-muted">ID: <?= esc($order['employee_id']) ?></small>
                                                 </div>
                                             </div>
-                                            <div class="flex-grow-1">
-                                                <h6 class="mb-0">Juan Pérez</h6>
-                                                <small class="text-muted">809-555-1234</small>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex flex-wrap gap-1">
+                                                <?php foreach ($order['items'] as $item): ?>
+                                                    <span class="badge bg-light text-dark border"><?= $item['quantity'] ?>x Producto #<?= $item['product_id'] ?></span>
+                                                <?php endforeach; ?>
                                             </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="d-flex flex-wrap gap-1">
-                                            <span class="badge bg-light text-dark border">2x Pizza Pepperoni</span>
-                                            <span class="badge bg-light text-dark border">1x Refresco</span>
-                                        </div>
-                                    </td>
-                                    <td class="fw-bold">RD$ 1,250.00</td>
-                                    <td>
-                                        <span class="badge bg-warning text-dark rounded-pill">Pendiente</span>
-                                    </td>
-                                    <td>
-                                        <small class="text-muted">15/05/2023 18:30</small>
-                                    </td>
-                                    <td class="text-end">
-                                        <div class="dropdown">
-                                            <button class="btn btn-sm btn-light" data-bs-toggle="dropdown">
-                                                <i class="bi bi-three-dots-vertical"></i>
-                                            </button>
-                                            <ul class="dropdown-menu dropdown-menu-end">
-                                                <li>
-                                                    <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#detallePedidoModal">
+                                        </td>
+                                        <td class="fw-bold">RD$ <?= number_format($order['subtotal'], 2) ?></td>
+                                        <td class="fw-bold">RD$ <?= number_format($order['total'], 2) ?></td>                                        
+                                        <td>
+                                            <?php
+                                                $statusClasses = [
+                                                    'pending' => 'bg-warning text-dark',
+                                                    'processing' => 'bg-info text-white',
+                                                    'completed' => 'bg-success text-white',
+                                                    'cancelled' => 'bg-danger text-white',
+                                                ];
+                                                $statusLabel = [
+                                                    'pending' => 'Pendiente',
+                                                    'processing' => 'En preparación',
+                                                    'completed' => 'Completado',
+                                                    'cancelled' => 'Cancelado',
+                                                ];
+                                                $status = $order['status'];
+                                            ?>
+                                            <span class="badge <?= $statusClasses[$status] ?> rounded-pill">
+                                                <?= $statusLabel[$status] ?>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <small class="text-muted"><?= date('d/m/Y H:i', strtotime($order['created_at'])) ?></small>
+                                        </td>
+                                        <td class="text-end">
+                                            <div class="dropdown">
+                                                <button class="btn btn-sm btn-light" data-bs-toggle="dropdown">
+                                                    <i class="bi bi-three-dots-vertical"></i>
+                                                </button>
+                                                <ul class="dropdown-menu dropdown-menu-end">
+                                                    <li>
+                                                    <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#detallePedidoModal" 
+                                                    data-order-id="<?= $order['id']; ?>" 
+                                                    data-customer-name="<?= esc($order['employee_name'] ?? 'N/A'); ?>" 
+                                                    data-order-date="<?= $order['created_at']; ?>" 
+                                                    data-order-status="<?= $order['status']; ?>" 
+                                                    data-order-total="<?= $order['total']; ?>" 
+                                                    data-products="<?= htmlspecialchars(json_encode($order['items']), ENT_QUOTES, 'UTF-8'); ?>">
                                                         <i class="bi bi-eye me-2"></i>Ver detalle
                                                     </button>
-                                                </li>
-                                                <li>
-                                                    <button class="dropdown-item text-success">
-                                                        <i class="bi bi-hourglass-split me-2"></i>Preparar
-                                                    </button>
-                                                </li>
-                                                <li>
-                                                    <button class="dropdown-item text-danger">
-                                                        <i class="bi bi-x-circle me-2"></i>Cancelar
-                                                    </button>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </td>
-                                </tr>
-                                
-                                <!-- Segunda fila de ejemplo -->
-                                <tr>
-                                    <td class="fw-bold">#1002</td>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <div class="flex-shrink-0 me-2">
-                                                <div class="avatar-sm bg-light rounded-circle d-flex align-items-center justify-content-center">
-                                                    <i class="bi bi-person-fill text-muted"></i>
-                                                </div>
+
+                                                    </li>
+                                                    <li>
+                                                        <button class="dropdown-item text-success">
+                                                            <i class="bi bi-hourglass-split me-2"></i>Preparar
+                                                        </button>
+                                                    </li>
+                                                    <li>
+                                                        <button class="dropdown-item text-danger">
+                                                            <i class="bi bi-x-circle me-2"></i>Cancelar
+                                                        </button>
+                                                    </li>
+                                                </ul>
                                             </div>
-                                            <div class="flex-grow-1">
-                                                <h6 class="mb-0">María Rodríguez</h6>
-                                                <small class="text-muted">829-555-5678</small>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="d-flex flex-wrap gap-1">
-                                            <span class="badge bg-light text-dark border">1x Ensalada César</span>
-                                            <span class="badge bg-light text-dark border">1x Lasagna</span>
-                                        </div>
-                                    </td>
-                                    <td class="fw-bold">RD$ 980.00</td>
-                                    <td>
-                                        <span class="badge bg-info text-white rounded-pill">En preparación</span>
-                                    </td>
-                                    <td>
-                                        <small class="text-muted">15/05/2023 19:15</small>
-                                    </td>
-                                    <td class="text-end">
-                                        <div class="dropdown">
-                                            <button class="btn btn-sm btn-light" data-bs-toggle="dropdown">
-                                                <i class="bi bi-three-dots-vertical"></i>
-                                            </button>
-                                            <ul class="dropdown-menu dropdown-menu-end">
-                                                <li>
-                                                    <button class="dropdown-item" data-bs-toggle="modal" data-bs-target="#detallePedidoModal">
-                                                        <i class="bi bi-eye me-2"></i>Ver detalle
-                                                    </button>
-                                                </li>
-                                                <li>
-                                                    <button class="dropdown-item text-success">
-                                                        <i class="bi bi-check-circle me-2"></i>Completar
-                                                    </button>
-                                                </li>
-                                                <li>
-                                                    <button class="dropdown-item text-danger">
-                                                        <i class="bi bi-x-circle me-2"></i>Cancelar
-                                                    </button>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </td>
-                                </tr>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
+
             
             <!-- Paginación -->
             <div class="d-flex justify-content-between align-items-center mt-3">
@@ -195,12 +182,12 @@
 </div>
 
 <!-- Modal Detalle Pedido -->
-<div class="modal fade" id="detallePedidoModal">
+<div class="modal fade" id="detallePedidoModal" tabindex="-1" aria-labelledby="detallePedidoModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Detalle del Pedido #1001</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <h5 class="modal-title" id="detallePedidoModalLabel">Detalle del Pedido</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <div class="row">
@@ -209,17 +196,12 @@
                         <ul class="list-group list-group-flush mb-4">
                             <li class="list-group-item d-flex justify-content-between">
                                 <span class="text-muted">Nombre:</span>
-                                <span class="fw-bold">Juan Pérez</span>
+                                <span id="customer-name" class="fw-bold"></span>
                             </li>
                             <li class="list-group-item d-flex justify-content-between">
-                                <span class="text-muted">Teléfono:</span>
-                                <span>809-555-1234</span>
+                                <span class="text-muted">Empresa:</span>
+                                <span id="customer-phone"></span>
                             </li>
-                            <li class="list-group-item d-flex justify-content-between">
-                                <span class="text-muted">Dirección:</span>
-                                <span>Calle Principal #123, Santo Domingo</span>
-                            </li>
-                            
                         </ul>
                     </div>
                     <div class="col-md-6">
@@ -227,11 +209,11 @@
                         <ul class="list-group list-group-flush">
                             <li class="list-group-item d-flex justify-content-between">
                                 <span class="text-muted">Fecha:</span>
-                                <span>15/05/2023 18:30</span>
+                                <span id="order-date"></span>
                             </li>
                             <li class="list-group-item d-flex justify-content-between">
                                 <span class="text-muted">Estado:</span>
-                                <span class="badge bg-warning text-dark">Pendiente</span>
+                                <span id="order-status" class="badge"></span>
                             </li>
                         </ul>
                     </div>
@@ -239,7 +221,7 @@
                 
                 <h6 class="mt-4 mb-3"><i class="bi bi-basket me-2"></i>Productos</h6>
                 <div class="table-responsive">
-                    <table class="table table-sm">
+                    <table class="table table-sm" id="product-table">
                         <thead>
                             <tr>
                                 <th width="50">Cant</th>
@@ -249,27 +231,16 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>2</td>
-                                <td>Pizza Pepperoni (Grande)</td>
-                                <td class="text-end">RD$ 550.00</td>
-                                <td class="text-end">RD$ 1,100.00</td>
-                            </tr>
-                            <tr>
-                                <td>1</td>
-                                <td>Refresco 2L</td>
-                                <td class="text-end">RD$ 150.00</td>
-                                <td class="text-end">RD$ 150.00</td>
-                            </tr>
+                            <!-- Dynamic Product Rows will be added here -->
                         </tbody>
                         <tfoot>
                             <tr>
                                 <th colspan="3" class="text-end">Subtotal:</th>
-                                <th class="text-end">RD$ 1,250.00</th>
+                                <th id="order-subtotal" class="text-end"></th>
                             </tr>
                             <tr class="table-active">
                                 <th colspan="3" class="text-end">Total:</th>
-                                <th class="text-end">RD$ 1,537.50</th>
+                                <th id="order-total" class="text-end"></th>
                             </tr>
                         </tfoot>
                     </table>
@@ -282,18 +253,85 @@
     </div>
 </div>
 
-<style>
-    .avatar-sm {
-        width: 32px;
-        height: 32px;
-    }
-    .table-hover tbody tr:hover {
-        background-color: rgba(0, 0, 0, 0.02);
-    }
-    .badge {
-        font-weight: 500;
-    }
-</style>
+<script>
+    document.getElementById('detallePedidoModal').addEventListener('show.bs.modal', function (event) {
+        var button = event.relatedTarget;
+        
+        try {
+            var orderId = button.getAttribute('data-order-id');
+            var customerName = button.getAttribute('data-customer-name');
+            var orderDate = button.getAttribute('data-order-date');
+            var orderStatus = button.getAttribute('data-order-status');
+            var orderTotal = button.getAttribute('data-order-total');
+            var productsJson = button.getAttribute('data-products');
+            
+            // Safely parse JSON
+            var products = [];
+            try {
+                products = JSON.parse(productsJson);
+            } catch (e) {
+                console.error('Error parsing products JSON:', e);
+                products = [];
+            }
+
+            // Rest of your modal population code...
+            document.getElementById('customer-name').textContent = customerName;
+            document.getElementById('order-date').textContent = new Date(orderDate).toLocaleString();
+            
+            // Status display
+            var statusLabel = {
+                'pending': 'Pendiente',
+                'processing': 'En preparación',
+                'completed': 'Completado',
+                'cancelled': 'Cancelado'
+            };
+            
+            var statusClass = {
+                'pending': 'bg-warning text-dark',
+                'processing': 'bg-info text-white',
+                'completed': 'bg-success text-white',
+                'cancelled': 'bg-danger text-white'
+            };
+            
+            var orderStatusElement = document.getElementById('order-status');
+            orderStatusElement.textContent = statusLabel[orderStatus] || orderStatus;
+            orderStatusElement.className = 'badge rounded-pill ' + (statusClass[orderStatus] || 'bg-secondary');
+            
+            // Product table population
+            var productTableBody = document.querySelector('#product-table tbody');
+            productTableBody.innerHTML = '';
+            
+            var subtotal = 0;
+            
+            products.forEach(function(product) {
+                var row = document.createElement('tr');
+                
+                // Add cells for each product property
+                ['quantity', 'name', 'unit_price', 'subtotal'].forEach(function(prop) {
+                    var cell = document.createElement('td');
+                    if (prop === 'unit_price' || prop === 'subtotal') {
+                        cell.className = 'text-end';
+                        cell.textContent = 'RD$ ' + (parseFloat(product[prop] || 0)).toFixed(2);
+                        if (prop === 'subtotal') subtotal += parseFloat(product[prop] || 0);
+                    } else {
+                        cell.textContent = product[prop] || (prop === 'name' ? 'Producto #' + (product.product_id || '') : '');
+                    }
+                    row.appendChild(cell);
+                });
+                
+                productTableBody.appendChild(row);
+            });
+            
+            // Update totals
+            document.getElementById('order-subtotal').textContent = 'RD$ ' + subtotal.toFixed(2);
+            document.getElementById('order-total').textContent = 'RD$ ' + parseFloat(orderTotal).toFixed(2);
+            
+        } catch (error) {
+            console.error('Error showing order details:', error);
+        }
+    });
+</script>
+
     
 </body>
 </html>

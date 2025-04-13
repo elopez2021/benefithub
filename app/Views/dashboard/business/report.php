@@ -44,20 +44,7 @@
 <body>
     <div class="wrapper d-flex">
         <!-- Sidebar -->
-        <div class="sidebar">
-            <h4 class="mb-4">BenefitHub Empresas</h4>
-            <div class="list-group">
-                <a href="index.html" class="list-group-item list-group-item-action bg-transparent text-white border-0">
-                    <i class="bi bi-people me-2"></i>Empleados
-                </a>
-                <a href="credits.html" class="list-group-item list-group-item-action bg-transparent text-white border-0">
-                    <i class="bi bi-credit-card me-2"></i>Créditos
-                </a>
-                <a href="report.html" class="list-group-item list-group-item-action bg-transparent text-white border-0 active">
-                    <i class="bi bi-bar-chart me-2"></i>Reportes
-                </a>
-            </div>
-        </div>
+        <?php include 'navbar.php'; ?>
 
         <!-- Contenido Principal -->
         <div class="main-content flex-grow-1">

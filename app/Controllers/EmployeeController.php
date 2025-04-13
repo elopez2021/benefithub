@@ -156,6 +156,7 @@ class EmployeeController extends BaseController
         $business_subsidy = $business['daily_subsidy'] ?? null;
         
         $data['subsidy_left_today'] = $business_subsidy;
+        $data['business_id'] = $business['id'];	
 
         try{
             if ($model->insert($data)) {

@@ -18,6 +18,7 @@ class EmployeeModel extends Model
         'last_name',
         'id_number',
         'subsidy_left_today',
+        'business_id',	
         'active'
     ];
 

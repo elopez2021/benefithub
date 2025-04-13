@@ -36,17 +36,17 @@
     <h4 class="mb-4">BenefitHub Empresas</h4>
     <div class="list-group">
         <!-- Empleados -->
-        <a href="<?= base_url('admin/employees'); ?>" class="list-group-item list-group-item-action bg-transparent text-white border-0 <?= uri_string() === 'admin/employees' ? 'active' : ''; ?>">
+        <a href="<?= base_url('business/dashboard'); ?>" class="list-group-item list-group-item-action bg-transparent text-white border-0 <?= uri_string() === 'business/employees' ? 'active' : ''; ?>">
             <i class="bi bi-people me-2"></i>Empleados
         </a>
         
         <!-- Créditos -->
-        <a href="<?= base_url('admin/credits'); ?>" class="list-group-item list-group-item-action bg-transparent text-white border-0 <?= uri_string() === 'admin/credits' ? 'active' : ''; ?>">
+        <a href="<?= base_url('business/credits'); ?>" class="list-group-item list-group-item-action bg-transparent text-white border-0 <?= uri_string() === 'business/credits' ? 'active' : ''; ?>">
             <i class="bi bi-credit-card me-2"></i>Créditos
         </a>
         
         <!-- Reportes -->
-        <a href="<?= base_url('admin/reports'); ?>" class="list-group-item list-group-item-action bg-transparent text-white border-0 <?= uri_string() === 'admin/reports' ? 'active' : ''; ?>">
+        <a href="<?= base_url('business/reports'); ?>" class="list-group-item list-group-item-action bg-transparent text-white border-0 <?= uri_string() === 'business/reports' ? 'active' : ''; ?>">
             <i class="bi bi-bar-chart me-2"></i>Reportes
         </a>
 

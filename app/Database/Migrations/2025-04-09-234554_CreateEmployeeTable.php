@@ -21,6 +21,12 @@ class CreateEmployeeTable extends Migration
                 'unsigned' => true,
                 'null' => false,
             ],
+            'business_id' => [
+                'type' => 'INT',
+                'constraint' => 11,
+                'unsigned' => true,
+                'null' => false,
+            ],
             'first_name' => [
                 'type' => 'VARCHAR',
                 'constraint' => '100',
@@ -57,6 +63,7 @@ class CreateEmployeeTable extends Migration
 
         $this->forge->addPrimaryKey('id');
         $this->forge->addForeignKey('user_id', 'users', 'id', 'CASCADE', 'CASCADE');
+        $this->forge->addForeignKey('business_id', 'business', 'id', 'CASCADE', 'CASCADE');
         $this->forge->createTable('employees');
     }
     public function down()
